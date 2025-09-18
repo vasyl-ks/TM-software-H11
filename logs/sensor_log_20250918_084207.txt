@@ -1,0 +1,10 @@
+2025/09/18 08:42:17 || AvgTemp: 21.64, MinTemp:  2.50, MaxTemp: 36.89 | AvgPressure: 4.74, MinPressure: 0.69, MaxPressure: 9.83
+2025/09/18 08:42:27 || AvgTemp: 24.30, MinTemp:  3.46, MaxTemp: 45.73 | AvgPressure: 4.64, MinPressure: 0.92, MaxPressure: 7.56
+2025/09/18 08:42:37 || AvgTemp: 30.76, MinTemp: 11.71, MaxTemp: 44.54 | AvgPressure: 4.80, MinPressure: 1.37, MaxPressure: 8.69
+2025/09/18 08:42:47 || AvgTemp: 14.90, MinTemp:  0.84, MaxTemp: 32.86 | AvgPressure: 4.75, MinPressure: 0.33, MaxPressure: 9.30
+2025/09/18 08:42:57 || AvgTemp: 17.38, MinTemp:  0.06, MaxTemp: 47.91 | AvgPressure: 4.86, MinPressure: 1.78, MaxPressure: 10.00
+2025/09/18 08:43:07 || AvgTemp: 15.59, MinTemp:  0.01, MaxTemp: 27.13 | AvgPressure: 4.41, MinPressure: 0.55, MaxPressure: 7.22
+2025/09/18 08:43:17 || AvgTemp: 25.43, MinTemp:  5.02, MaxTemp: 47.10 | AvgPressure: 5.09, MinPressure: 1.71, MaxPressure: 7.47
+2025/09/18 08:43:27 || AvgTemp: 24.26, MinTemp:  8.76, MaxTemp: 41.86 | AvgPressure: 4.51, MinPressure: 0.52, MaxPressure: 9.72
+2025/09/18 08:43:37 || AvgTemp: 27.84, MinTemp:  1.97, MaxTemp: 45.75 | AvgPressure: 3.51, MinPressure: 0.14, MaxPressure: 9.29
+2025/09/18 08:43:47 || AvgTemp: 30.83, MinTemp:  8.60, MaxTemp: 49.90 | AvgPressure: 5.40, MinPressure: 0.14, MaxPressure: 9.24
