@@ -23,15 +23,15 @@ Sensor simulates a sensor by generating random pressure and temperature
 readings every sensorInterval and sending them to the provided channel.
 */ 
 func Sensor(out chan<- SensorData) {
-	rand.Seed(time.Now().UnixNano())
+	ticker := time.NewTicker(sensorInterval)
+	defer ticker.Stop()
 
-	for {
+	for range ticker.C {
 		data := SensorData{
 			Pressure:    rand.Float32() * 10,   // 0-10 bar
 			Temperature: rand.Float32() * 50,   // 0-50 °C
 		}
 		out <- data
 		fmt.Println("Sensor generated:", data)
-		time.Sleep(sensorInterval)
 	}
 }
