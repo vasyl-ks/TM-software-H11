@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net"
 	"time"
+	"github.com/vasyl-ks/TM-software-H11/config"
 )
 
 /*
@@ -20,18 +21,15 @@ type Telemetry struct {
 	Pressure    float32 `json:"pressure"`
 }
 
-// telemetryInterval defines how often Telemetry is generated and sent.
-const telemetryInterval = 100 * time.Millisecond
-
-// clientPort defines the UDP port to which telemetry messages are sent.
-const clientPort = 100000
-
 /*
 UDPServer simulates a vehicle telemetry server.
 It generates random Telemetry data at a fixed interval, 
 marshals it to JSON and sends it via UDP to localhost client address 
 */
 func UDPServer() {
+	telemetryInterval := config.Server.Interval // defines how often Telemetry is generated and sent.
+	clientPort := config.Server.ClientPort // defines the UDP port to which telemetry messages are sent.
+
 	// Client address
 	clientAddr := net.UDPAddr{
 		IP:   net.ParseIP("127.0.0.1"),
