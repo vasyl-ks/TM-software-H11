@@ -2,6 +2,7 @@ package main
 
 import(
 	"github.com/vasyl-ks/TM-software-H11/modules"
+	"github.com/vasyl-ks/TM-software-H11/config"
 )
 
 /*
@@ -13,6 +14,9 @@ The final "select {}" keep the program running indefinitely.
 */
 
 func main() {
+	// Load configuration (const variables)
+	config.LoadConfig()
+
 	// Create unbuffered channels.
 	dataChan := make(chan modules.SensorData)
 	resultChan := make(chan modules.Result)

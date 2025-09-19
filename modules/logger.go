@@ -5,10 +5,8 @@ import (
 	"os"
 	"time"
 	"log"
+	"github.com/vasyl-ks/TM-software-H11/config"
 )
-
-// maxLines defines the maximum number of Results to log in a single file.
-const maxLines = 10
 
 /*
 Logger receives Results from a channel and logs them into file.
@@ -19,9 +17,18 @@ Logger receives Results from a channel and logs them into file.
 */
 func Logger(resultChan <-chan Result) {
 	lineCount := 0
+	fileDir := config.Logger.FileDir // defines directory where the log is saved.
+	maxLines := config.Logger.MaxLines // defines the maximum number of Results to log in a single file.
+
+	// Check directory
+	err := os.MkdirAll(fileDir, 0755)
+	if err != nil {
+		fmt.Println("Error creating directory:", err)
+		return
+	}
 
 	// Create a new file
-	filename := fmt.Sprintf("logs/sensor_log_%s.log", time.Now().Format("20060102_150405"))
+	filename := fmt.Sprintf("%s/sensor_log_%s.log", fileDir, time.Now().Format("20060102_150405"))
 	file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		fmt.Println("Error opening log file:", err)

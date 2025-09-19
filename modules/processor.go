@@ -2,6 +2,7 @@ package modules
 
 import (
 	"time"
+	"github.com/vasyl-ks/TM-software-H11/config"
 )
 
 /*
@@ -16,9 +17,6 @@ type Result struct {
 	MinPressure     float32
 	MaxPressure     float32
 }
-
-// batchInterval defines how often results are calculated.
-const batchInterval = 10 * time.Second
 
 // calculateAverage returns average temperature and pressure from a slice of SensorData.
 func calculateAverage(data []SensorData) Result {
@@ -88,6 +86,8 @@ Note:
   even though a single-pass calculation would be faster and use less computational overhead.
 */ 
 func Processor(in <-chan SensorData, out chan<- Result) {
+	batchInterval := config.Processor.Interval // defines how often results are calculated.
+
 	var dataSlice []SensorData
 	ticker := time.NewTicker(batchInterval)
 	defer ticker.Stop()
