@@ -21,7 +21,7 @@ func Logger(resultChan <-chan Result) {
 	lineCount := 0
 
 	// Create a new file
-	filename := fmt.Sprintf("logs/sensor_log_%s.txt", time.Now().Format("20060102_150405"))
+	filename := fmt.Sprintf("logs/sensor_log_%s.log", time.Now().Format("20060102_150405"))
 	file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		fmt.Println("Error opening log file:", err)

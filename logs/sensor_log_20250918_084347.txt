@@ -1,2 +1,0 @@
-2025/09/18 08:43:57 || AvgTemp: 23.75, MinTemp:  6.31, MaxTemp: 46.26 | AvgPressure: 4.94, MinPressure: 1.14, MaxPressure: 9.98
-2025/09/18 08:44:07 || AvgTemp: 22.36, MinTemp:  0.31, MaxTemp: 45.75 | AvgPressure: 6.47, MinPressure: 1.01, MaxPressure: 9.86
