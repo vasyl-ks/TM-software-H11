@@ -7,19 +7,10 @@ import (
 	"net"
 	"time"
 	"github.com/vasyl-ks/TM-software-H11/config"
+	"github.com/vasyl-ks/TM-software-H11/modules/model"
 )
 
-/*
-Telemetry represents a single vehicle reading, 
-containing speed, RPM, temperature, and pressure
-*/
-type Telemetry struct {
-	VehicleID   string  `json:"vehicle_id"`
-	Speed       float32 `json:"speed"`
-	RPM         float32 `json:"rpm"`
-	Temperature float32 `json:"temperature"`
-	Pressure    float32 `json:"pressure"`
-}
+
 
 /*
 UDPServer simulates a vehicle telemetry server.
@@ -51,7 +42,7 @@ func UDPServer() {
 
 	for range ticker.C {
 		// Create a random telemetry
-		t := Telemetry{
+		t := model.Telemetry{
 			VehicleID:   "V123",
 			Speed:       rand.Float32() * 200,   // 0–200 km/h
 			RPM:         rand.Float32() * 8000,  // 0–8000 rpm
