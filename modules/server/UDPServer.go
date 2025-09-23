@@ -50,10 +50,11 @@ func UDPServer() {
 		// Create a random telemetry
 		t := model.Telemetry{
 			VehicleID:   vehicleID,
-			Speed:       rand.Float32() * (maxS - minS) + minS,   // 0–200 km/h
-			RPM:         rand.Float32() * (maxR - minR) + minR,  // 0–8000 rpm
-			Temperature: rand.Float32() * (maxT - minT) + minT,   // 0–100 °C
-			Pressure:    rand.Float32() * (maxP - minP) + minP,    // 0–10 bar
+			Speed:       rand.Float32() * (maxS - minS) + minS,	// 0–200 km/h
+			RPM:         rand.Float32() * (maxR - minR) + minR, // 0–8000 rpm
+			Temperature: rand.Float32() * (maxT - minT) + minT, // 0–100 °C
+			Pressure:    rand.Float32() * (maxP - minP) + minP, // 0–10 bar
+			CreatedAt:   time.Now().UTC(),						// Time of creation
 		}
 
 		// Marshal telemetry to JSON

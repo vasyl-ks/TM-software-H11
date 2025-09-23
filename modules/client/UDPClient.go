@@ -39,7 +39,10 @@ func logTelemetry(entry model.Telemetry) error {
 
     // Write in the file
     log.SetOutput(file)
-    log.Printf("|| Vehicle:%s, Speed:%.2f, RPM=%.2f, Temp=%.2f, Pressure=%.2f\n",
+    log.SetFlags(0)
+    log.Printf("| Created at %s, Logged at %s | Vehicle:%s, Speed:%.2f, RPM=%.2f, Temp=%.2f, Pressure=%.2f\n",
+        entry.CreatedAt.Local().Format("15:04:05.000000"),
+        time.Now().Local().Format("15:04:05.000000"),
         entry.VehicleID,
         entry.Speed,
         entry.RPM,
