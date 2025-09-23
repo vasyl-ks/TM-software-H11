@@ -10,5 +10,8 @@ func main() {
 	config.LoadConfig()
 
 	// Run Server
-	server.UDPServer()
+	go server.UDPServer()
+
+	// Block forever to keep the main goroutine alive.
+	select{}
 }
