@@ -1,7 +1,16 @@
 {
     "server": {
         "clientPort": 10000,
-        "intervalMiliSeconds": 100
+        "intervalMiliSeconds": 100,
+        "vehicleID": "V123",
+	    "speedMaxKm": 200,
+	    "speedMinKm": 0,
+	    "rpmMax": 8000,
+	    "rpmMix": 0,
+	    "tempMaxCº": 100,
+	    "tempMinCº": 0,
+	    "pressureMaxBar": 10,
+	    "pressureMinBar": 0
     },
     "client": {
         "fileDir": "logs"

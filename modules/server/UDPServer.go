@@ -41,13 +41,19 @@ func UDPServer() {
 	defer ticker.Stop()
 
 	for range ticker.C {
+		vehicleID := config.Server.VehicleID
+		minS, maxS := config.Server.SpeedMin, config.Server.SpeedMax
+		minR, maxR := config.Server.RPMMin, config.Server.RPMMax 
+		minT, maxT := config.Server.TempMin, config.Server.TempMax
+		minP, maxP := config.Server.TempMin, config.Server.TempMax
+
 		// Create a random telemetry
 		t := model.Telemetry{
-			VehicleID:   "V123",
-			Speed:       rand.Float32() * 200,   // 0–200 km/h
-			RPM:         rand.Float32() * 8000,  // 0–8000 rpm
-			Temperature: rand.Float32() * 100,   // 0–100 °C
-			Pressure:    rand.Float32() * 10,    // 0–10 bar
+			VehicleID:   vehicleID,
+			Speed:       rand.Float32() * (maxS - minS) + minS,   // 0–200 km/h
+			RPM:         rand.Float32() * (maxR - minR) + minR,  // 0–8000 rpm
+			Temperature: rand.Float32() * (maxT - minT) + minT,   // 0–100 °C
+			Pressure:    rand.Float32() * (maxP - minP) + minP,    // 0–10 bar
 		}
 
 		// Marshal telemetry to JSON
