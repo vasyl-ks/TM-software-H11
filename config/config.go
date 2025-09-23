@@ -7,20 +7,25 @@ import (
 	"time"
 )
 
+// Server-side config
 type server struct {
 	ClientPort 	int	`json:"clientPort"`
 	I 			int	`json:"intervalMiliSeconds"`
 	Interval 	time.Duration
 }
 
+// Client-side config
 type client struct {
 	FileDir 	string `json:"fileDir"`
 }
 
+// Global config instances
 var Server server
 var Client client
 
+// LoadConfig reads config.json and configures Server and Client
 func LoadConfig() {
+	// Open the file
 	file, err := os.Open("config.json")
 	if err != nil {
 		fmt.Println("Error loading configuration: ", err)
@@ -28,19 +33,24 @@ func LoadConfig() {
 	}
 	defer file.Close()
 
+	// Read the file
+	decoder := json.NewDecoder(file)
+
+	// Parse it into the temp struct
 	temp := struct {
 		S server `json:"server"`
 		C client `json:"client"`
 	}{}
-	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&temp)
 	if err != nil {
 		fmt.Println("Error loading configuration: ", err)
 		return
 	}
 
+	// Copy parsed values into globals
 	Server = temp.S
 	Client = temp.C
 
+	// Derive time.Duration from milliseconds
 	Server.Interval = time.Duration(Server.I) * time.Millisecond
 }
