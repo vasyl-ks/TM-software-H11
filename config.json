@@ -1,4 +1,9 @@
 {
-    "clientPort": 10000,
-    "intervalMiliSeconds": 100
+    "server": {
+        "clientPort": 10000,
+        "intervalMiliSeconds": 100
+    },
+    "client": {
+        "fileDir": "logs"
+    }
 }
