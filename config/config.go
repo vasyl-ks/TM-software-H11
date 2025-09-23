@@ -12,15 +12,16 @@ type server struct {
 	ClientPort 	int	`json:"clientPort"`
 	I 			int	`json:"intervalMiliSeconds"`
 	Interval 	time.Duration
+	
 	VehicleID	string	`json:"vehicleID"`
-	SpeedMax	float32	`json:"speedMax"`
-	SpeedMin	float32	`json:"speedMin"`
+	SpeedMax	float32	`json:"speedMaxKm"`
+	SpeedMin	float32	`json:"speedMinKm"`
 	RPMMax		float32	`json:"rpmMax"`
 	RPMMin		float32	`json:"rpmMix"`
-	TempMax		float32	`json:"tempMax"`
-	TempMin		float32	`json:"tempMin"`
-	PressureMax	float32	`json:"pressureMax"`
-	PressureMin	float32	`json:"pressureMin"`
+	TempMax		float32	`json:"tempMaxCº"`
+	TempMin		float32	`json:"tempMinCº"`
+	PressureMax	float32	`json:"pressureMaxBar"`
+	PressureMin	float32	`json:"pressureMinBar"`
 }
 
 // Client-side config

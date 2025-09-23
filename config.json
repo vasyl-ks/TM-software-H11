@@ -2,6 +2,7 @@
     "server": {
         "clientPort": 10000,
         "intervalMiliSeconds": 100,
+        
         "vehicleID": "V123",
 	    "speedMaxKm": 200,
 	    "speedMinKm": 0,
