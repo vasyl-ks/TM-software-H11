@@ -1,0 +1,16 @@
+{
+    "sensor": {
+        "intervalSeconds": 1,
+	    "maxPressure": 10,
+	    "minPressure": 0,
+	    "maxTemp": 50,
+	    "minTemp": 0
+    },
+    "processor": {
+        "intervalSeconds": 10
+    },
+    "logger": {
+        "maxLines": 10,
+        "fileDir": "DATA"
+    }
+}
