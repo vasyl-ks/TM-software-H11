@@ -32,11 +32,16 @@ type logger struct {
 	FileDir  string `json:"fileDir"`
 }
 
+type sender struct {
+	ClientPort int 	`json:"clientPort"`
+}
+
 // Global config instances
 var Vehicle vehicle
 var Sensor sensor
 var Processor processor
 var Logger logger
+var Sender sender
 
 // LoadConfig reads config.json and configures 
 func LoadConfig() {
@@ -53,10 +58,11 @@ func LoadConfig() {
 
 	// Parse it into a temp struct
 	temp := struct {
-		V vehicle   `json:"vehicle"`
-		S sensor    `json:"sensor"`
-		P processor `json:"processor"`
-		L logger    `json:"logger"`
+		V  vehicle   `json:"vehicle"`
+		Sn sensor    `json:"sensor"`
+		P  processor `json:"processor"`
+		L  logger    `json:"logger"`
+		Sd sender 	 `json:"sender"`
 	}{}
 	err = decoder.Decode(&temp)
 	if err != nil {
@@ -65,9 +71,10 @@ func LoadConfig() {
 	}
 
 	// Copy parserd values into globals
-	Sensor = temp.S
+	Sensor = temp.Sn
 	Processor = temp.P
 	Logger = temp.L
+	Sender = temp.Sd
 
 	// Derive time.Duration to Seconds
 	Sensor.Interval = time.Duration(Sensor.I) * time.Second

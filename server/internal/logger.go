@@ -1,3 +1,5 @@
+// - Logger consumes ResultData from resultChan and logs them in a file.
+
 package internal
 
 import (

@@ -6,7 +6,7 @@ import (
 
 /*
 main loads configuration values, and then calls the Server goroutine.
-- Server generates SensorData, proceess it into Result and then logs it.
+- Server generates SensorData, proceess it into Result and then sends it via UDP.
 The final "select {}" keep the program running indefinitely.
 */
 func main() {
