@@ -1,6 +1,11 @@
 {
+    "vehicle": {
+        "vehicleID": "123"
+    },
     "sensor": {
         "intervalSeconds": 1,
+        "maxSpeed": 150,
+	    "minSpeed": 0,
 	    "maxPressure": 10,
 	    "minPressure": 0,
 	    "maxTemp": 50,
@@ -11,6 +16,6 @@
     },
     "logger": {
         "maxLines": 10,
-        "fileDir": "DATA"
+        "fileDir": "logs"
     }
 }
