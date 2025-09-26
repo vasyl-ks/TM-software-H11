@@ -1,4 +1,4 @@
-package modules
+package internal
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"time"
 	"log"
 	"github.com/vasyl-ks/TM-software-H11/config"
+	"github.com/vasyl-ks/TM-software-H11/model"
 )
 
 /*
@@ -15,7 +16,7 @@ Logger receives Results from a channel and logs them into file.
 - Files are named using the creation timestamp in the format "YYYYMMDD_hhmmss".
 - If terminated early, the current file may have fewer than maxLines; a new file is created on the next run.
 */
-func Logger(resultChan <-chan Result) {
+func Logger(resultChan <-chan model.Result) {
 	lineCount := 0
 	fileDir := config.Logger.FileDir // defines directory where the log is saved.
 	maxLines := config.Logger.MaxLines // defines the maximum number of Results to log in a single file.

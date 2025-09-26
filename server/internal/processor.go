@@ -1,25 +1,13 @@
-package modules
+package internal
 
 import (
 	"time"
 	"github.com/vasyl-ks/TM-software-H11/config"
+	"github.com/vasyl-ks/TM-software-H11/model"
 )
 
-/*
-Result represents statistics for a batch of SensorData,
-containing average, minimum, and maximum values for both temperature and pressure.
-*/
-type Result struct {
-	AverageTemp    float32
-	MinTemp        float32
-	MaxTemp        float32
-	AveragePressure float32
-	MinPressure     float32
-	MaxPressure     float32
-}
-
 // calculateAverage returns average temperature and pressure from a slice of SensorData.
-func calculateAverage(data []SensorData) Result {
+func calculateAverage(data []model.SensorData) model.Result {
 	var sumTemp, sumPressure float32
 	n := float32(len(data))
 
@@ -28,14 +16,14 @@ func calculateAverage(data []SensorData) Result {
 		sumPressure += d.Pressure
 	}
 
-	return Result{
+	return model.Result{
 		AverageTemp:    sumTemp / n,
 		AveragePressure: sumPressure / n,
 	}
 }
 
 // calculateMin returns minimum temperature and pressure from a slice of SensorData.
-func calculateMin(data []SensorData) Result {
+func calculateMin(data []model.SensorData) model.Result {
 	minTemp := data[0].Temperature
 	minPressure := data[0].Pressure
 
@@ -48,14 +36,14 @@ func calculateMin(data []SensorData) Result {
 		}
 	}
 
-	return Result{
+	return model.Result{
 		MinTemp:        minTemp,
 		MinPressure:    minPressure,
 	}
 }
 
 // calculateMax returns maximum temperature and pressure from a slice of SensorData.
-func calculateMax(data []SensorData) Result {
+func calculateMax(data []model.SensorData) model.Result {
 	maxTemp := data[0].Temperature
 	maxPressure := data[0].Pressure
 
@@ -68,7 +56,7 @@ func calculateMax(data []SensorData) Result {
 		}
 	}
 
-	return Result{
+	return model.Result{
 		MaxTemp:        maxTemp,
 		MaxPressure:    maxPressure,
 	}
@@ -85,10 +73,10 @@ Note:
 - Calculations are split into separate functions/goroutines for concurrency practice,
   even though a single-pass calculation would be faster and use less computational overhead.
 */ 
-func Processor(in <-chan SensorData, out chan<- Result) {
+func Processor(in <-chan model.SensorData, out chan<- model.Result) {
 	batchInterval := config.Processor.Interval // defines how often results are calculated.
 
-	var dataSlice []SensorData
+	var dataSlice []model.SensorData
 	ticker := time.NewTicker(batchInterval)
 	defer ticker.Stop()
 
@@ -98,9 +86,9 @@ func Processor(in <-chan SensorData, out chan<- Result) {
 				dataSlice = append(dataSlice, data)
 			case <- ticker.C:
 				// Channels for calculations
-				avgChan := make(chan Result)
-				minChan := make(chan Result)
-				maxChan := make(chan Result)
+				avgChan := make(chan model.Result)
+				minChan := make(chan model.Result)
+				maxChan := make(chan model.Result)
 
 				// Goroutines for calculations
 				go func() { avgChan <- calculateAverage(dataSlice) }()
@@ -113,7 +101,7 @@ func Processor(in <-chan SensorData, out chan<- Result) {
 				max := <-maxChan
 
 				// Build Result
-				result := Result{
+				result := model.Result{
 					AverageTemp:    avg.AverageTemp,
 					MinTemp:        min.MinTemp,
 					MaxTemp:        max.MaxTemp,
@@ -124,7 +112,7 @@ func Processor(in <-chan SensorData, out chan<- Result) {
 				out <- result
 
 				// Reset slice for next batch
-				dataSlice = []SensorData{}
+				dataSlice = []model.SensorData{}
 		}
 	}
 }
