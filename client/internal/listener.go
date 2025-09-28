@@ -13,7 +13,7 @@ Listen binds a UDP socket on config.Sender.ClientPort and forwards incoming data
 -Intended to run as a goroutine and loops indefinitely until shutdown.
 */
 func Listen(out chan<- []byte) {
-	addr := net.UDPAddr{Port: config.Sender.ClientPort} // UDP Address
+	addr := net.UDPAddr{Port: config.SenderANDListener.UDPPort} // UDP Address
 
 	// Listen for UDP Traffic
 	conn, err := net.ListenUDP("udp", &addr)

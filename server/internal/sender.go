@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net"
+
 	"github.com/vasyl-ks/TM-software-H11/config"
 	"github.com/vasyl-ks/TM-software-H11/model"
 )
@@ -15,8 +16,8 @@ func Sender(resultChan <-chan model.ResultData) {
 
 	// Client address
 	clientAddr := net.UDPAddr{
-		IP: net.ParseIP("127.0.0.1"),
-		Port: config.Sender.ClientPort,
+		IP:   net.ParseIP("127.0.0.1"),
+		Port: config.SenderANDListener.UDPPort,
 	}
 
 	// Create connetion
@@ -28,7 +29,7 @@ func Sender(resultChan <-chan model.ResultData) {
 	defer conn.Close()
 	fmt.Println("Server sending data to", clientAddr.String())
 
-	for resultData := range resultChan { 
+	for resultData := range resultChan {
 		// Marshal ResultData to JSON
 		data, err := json.Marshal(resultData)
 		if err != nil {

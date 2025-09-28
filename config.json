@@ -18,7 +18,7 @@
         "maxLines": 10,
         "fileDir": "logs"
     },
-    "sender": {
-        "clientPort": 10000
+    "senderANDlistener": {
+        "udpPort": 10000
     }
 }
