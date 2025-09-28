@@ -13,7 +13,7 @@ type vehicle struct {
 
 type sensor struct {
 	Interval    time.Duration
-	I           int     `json:"intervalSeconds"`
+	I           int     `json:"intervalMilliSeconds"`
 	MaxSpeed    float32 `json:"maxSpeed"`
 	MinSpeed    float32 `json:"minSpeed"`
 	MaxPressure float32 `json:"maxPressure"`
@@ -24,7 +24,7 @@ type sensor struct {
 
 type processor struct {
 	Interval time.Duration
-	I        int `json:"intervalSeconds"`
+	I        int `json:"intervalMilliSeconds"`
 }
 
 type logger struct {
@@ -77,6 +77,6 @@ func LoadConfig() {
 	SenderANDListener = temp.SaL
 
 	// Derive time.Duration to Seconds
-	Sensor.Interval = time.Duration(Sensor.I) * time.Second
-	Processor.Interval = time.Duration(Processor.I) * time.Second
+	Sensor.Interval = time.Duration(Sensor.I) * time.Millisecond
+	Processor.Interval = time.Duration(Processor.I) * time.Millisecond
 }

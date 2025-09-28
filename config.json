@@ -3,7 +3,7 @@
         "vehicleID": "123"
     },
     "sensor": {
-        "intervalSeconds": 1,
+        "intervalMilliSeconds": 1,
         "maxSpeed": 150,
 	    "minSpeed": 0,
 	    "maxPressure": 10,
@@ -12,10 +12,10 @@
 	    "minTemp": 0
     },
     "processor": {
-        "intervalSeconds": 10
+        "intervalMilliSeconds": 100
     },
     "logger": {
-        "maxLines": 10,
+        "maxLines": 5000,
         "fileDir": "logs"
     },
     "senderANDlistener": {

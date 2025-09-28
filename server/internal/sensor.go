@@ -1,10 +1,8 @@
 package internal
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
-
 	"github.com/vasyl-ks/TM-software-H11/config"
 	"github.com/vasyl-ks/TM-software-H11/model"
 )
@@ -32,6 +30,5 @@ func Sensor(out chan<- model.SensorData) {
 			CreatedAt: time.Now().Local(),
 		}
 		out <- data
-		fmt.Println("Sensor generated:", data)
 	}
 }
