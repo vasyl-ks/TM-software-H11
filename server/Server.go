@@ -6,10 +6,10 @@ import (
 )
 
 /*
-Server initializes the dataChan and resultChan channels, and calls the Sensor, Processos and Logger goroutines.
-- Sensor runs independently and produces random values for SensorData.
-- Processor consumes SensorData from dataChan and produces ResultData.
-- Sender consumes ResultData from resultChan, marshals it to JSON and sends it via UDP.
+Server initializes the dataChan and resultChan channels, and calls the Sensor, Process and Log goroutines.
+- Sensor runs independently, generates random values, SensorData, and sends it through dataChan.
+- Process receives SensorData, calculates statistics, builds a Result, and sends it through resultChan.
+- Send receives ResultData from resultChan, marshals it to JSON and sends it via UDP.
 */
 func Server() {
 	// Create unbuffered channels.
@@ -18,7 +18,6 @@ func Server() {
 
 	// Launch concurrent goroutines.
 	go internal.Sensor(dataChan)
-	go internal.Processor(dataChan, resultChan)
-	//go internal.Logger(resultChan)
-	go internal.Sender(resultChan)
+	go internal.Process(dataChan, resultChan)
+	go internal.Send(resultChan)
 }

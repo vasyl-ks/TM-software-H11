@@ -10,7 +10,6 @@ import (
 /*
 Listen binds a UDP socket on config.Sender.ClientPort and forwards incoming datagrams to out.
 - Copies each datagram into a new slice to avoid buffer reuse.
--Intended to run as a goroutine and loops indefinitely until shutdown.
 */
 func Listen(out chan<- []byte) {
 	addr := net.UDPAddr{Port: config.SenderANDListener.UDPPort} // UDP Address

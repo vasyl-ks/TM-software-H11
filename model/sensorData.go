@@ -5,7 +5,7 @@ import "time"
 /*
 SensorData represents a single sensor reading,
 containing speed, pressure and temperature values
-and indentificatos such as its ID and the time it was generated.
+and indemnifications such as its ID and the time it was generated.
 */
 type SensorData struct {
 	Speed       float32

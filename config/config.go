@@ -70,7 +70,7 @@ func LoadConfig() {
 		return
 	}
 
-	// Copy parserd values into globals
+	// Copy parsed values into globals
 	Sensor = temp.Sn
 	Processor = temp.P
 	Logger = temp.L

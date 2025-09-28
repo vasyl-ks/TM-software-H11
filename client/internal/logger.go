@@ -15,7 +15,6 @@ Log receives ResultData from a channel and logs them into file.
 - Once the limit is reached, the current file is closed and a new file is created.
 - Files are named using the creation timestamp in the format "YYYYMMDD_hhmmss".
 - If terminated early, the current file may have fewer than maxLines; a new file is created on the next run.
-- Intended to run as a goroutine and loops indefinitely until shutdown.
 */
 func Log(in <-chan model.ResultData) {
 	lineCount := 0

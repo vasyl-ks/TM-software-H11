@@ -10,9 +10,9 @@ import (
 )
 
 /*
-Sender receives ResultData from a channel, marshals it to JSON and sends it via UDP to a localhost client.
+Send receives ResultData from a channel, marshals it to JSON and sends it via UDP to a localhost client.
 */
-func Sender(resultChan <-chan model.ResultData) {
+func Send(resultChan <-chan model.ResultData) {
 
 	// Client address
 	clientAddr := net.UDPAddr{

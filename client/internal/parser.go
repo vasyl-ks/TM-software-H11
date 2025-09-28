@@ -8,7 +8,6 @@ import (
 
 /*
 Parse consumes a raw JSON datagram from in, unmarshals it to ResultData, and sends it to out.
-- Intended to run as a goroutine and loops indefinitely until shutdown.
 */
 func Parse(in <-chan []byte, out chan<- model.ResultData) {
 	for payload := range in { // Receive Datagram

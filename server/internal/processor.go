@@ -7,15 +7,15 @@ import (
 	"github.com/vasyl-ks/TM-software-H11/model"
 )
 
-// getLastTime returns the latest timestamp from a slice of SensorData. 
+// getLastTime returns the latest timestamp from a slice of SensorData.
 func getLastTime(data []model.SensorData) time.Time {
-    maxTime := data[0].CreatedAt
-    for _, d := range data[1:] {
-        if d.CreatedAt.After(maxTime) {
-            maxTime = d.CreatedAt
-        }
-    }
-    return maxTime
+	maxTime := data[0].CreatedAt
+	for _, d := range data[1:] {
+		if d.CreatedAt.After(maxTime) {
+			maxTime = d.CreatedAt
+		}
+	}
+	return maxTime
 }
 
 // calculateAverage returns average values from a slice of SensorData.
@@ -80,24 +80,23 @@ func calculateMax(data []model.SensorData) model.ResultData {
 	}
 
 	return model.ResultData{
-		MaxSpeed: 	 maxSpeed,
+		MaxSpeed:    maxSpeed,
 		MaxTemp:     maxTemp,
 		MaxPressure: maxPressure,
 	}
 }
 
 /*
-Processor collects SensorData values from the input channel into a slice.
+Process collects SensorData values from the input channel into a slice.
 Every batchInterval, it calculates statistics (average, min, max) using
-separate goroutines (fan-out/fan-in pattern), builds a Result, and sends it
-to the output channel.
+separate goroutines (fan-out/fan-in pattern), builds a Result, and sends it to the output channel.
 
 Note:
   - The slice is cleared after each batch, so results are not cumulative.
   - Calculations are split into separate functions/goroutines for concurrency practice,
     even though a single-pass calculation would be faster and use less computational overhead.
 */
-func Processor(in <-chan model.SensorData, out chan<- model.ResultData) {
+func Process(in <-chan model.SensorData, out chan<- model.ResultData) {
 	batchInterval := config.Processor.Interval // defines how often results are calculated.
 
 	var dataSlice []model.SensorData
@@ -116,7 +115,7 @@ func Processor(in <-chan model.SensorData, out chan<- model.ResultData) {
 			maxChan := make(chan model.ResultData)
 
 			// Goroutines for calculations
-			go func() { tmeChan <- getLastTime(dataSlice)}()
+			go func() { tmeChan <- getLastTime(dataSlice) }()
 			go func() { avgChan <- calculateAverage(dataSlice) }()
 			go func() { minChan <- calculateMin(dataSlice) }()
 			go func() { maxChan <- calculateMax(dataSlice) }()
@@ -138,9 +137,9 @@ func Processor(in <-chan model.SensorData, out chan<- model.ResultData) {
 				AveragePressure: avg.AveragePressure,
 				MinPressure:     min.MinPressure,
 				MaxPressure:     max.MaxPressure,
-				VehicleID: 		 dataSlice[0].VehicleID,
-				CreatedAt: 	 tme,
-				ProcessedAt: 	 time.Now().Local(),
+				VehicleID:       dataSlice[0].VehicleID,
+				CreatedAt:       tme,
+				ProcessedAt:     time.Now().Local(),
 			}
 			out <- result
 
