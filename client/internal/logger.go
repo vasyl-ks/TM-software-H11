@@ -1,5 +1,3 @@
-// - Logger consumes ResultData from resultChan and logs them in a file.
-
 package internal
 
 import (
@@ -12,13 +10,14 @@ import (
 )
 
 /*
-Logger receives ResultData from a channel and logs them into file.
+Log receives ResultData from a channel and logs them into file.
 - Each file contains up to maxLines entries.
 - Once the limit is reached, the current file is closed and a new file is created.
 - Files are named using the creation timestamp in the format "YYYYMMDD_hhmmss".
 - If terminated early, the current file may have fewer than maxLines; a new file is created on the next run.
+- Intended to run as a goroutine and loops indefinitely until shutdown.
 */
-func Logger(resultChan <-chan model.ResultData) {
+func Log(in <-chan model.ResultData) {
 	lineCount := 0
 	fileDir := config.Logger.FileDir // defines directory where the log is saved.
 	maxLines := config.Logger.MaxLines // defines the maximum number of ResultData to log in a single file.
@@ -41,7 +40,7 @@ func Logger(resultChan <-chan model.ResultData) {
 	log.SetOutput(file)
 	log.SetFlags(0)
 
-	for resultData := range resultChan {
+	for resultData := range in { // Receive JSON
 		// Write in the file
         log.Printf(
             "|| Created at %s, Processed at %s, Logged at %s | AvgSpeed: %5.2f, MinSpeed: %5.2f, MaxSpeed: %5.2f | AvgTemp: %5.2f, MinTemp: %5.2f, MaxTemp: %5.2f | AvgPressure: %4.2f, MinPressure: %4.2f, MaxPressure: %4.2f ||\n",
