@@ -7,30 +7,35 @@ import (
 	"time"
 )
 
-type sensor struct {
+// Server-side config
+type server struct {
+	ClientPort 	int	`json:"clientPort"`
+	I 			int	`json:"intervalMiliSeconds"`
 	Interval 	time.Duration
-	I 			int		`json:"intervalSeconds"`
-	MaxPressure float32	`json:"maxPressure"`
-	MinPressure float32	`json:"minPressure"`
-	MaxTemp     float32 `json:"maxTemp"`
-	MinTemp     float32 `json:"minTemp"`
+	
+	VehicleID	string	`json:"vehicleID"`
+	SpeedMax	float32	`json:"speedMaxKm"`
+	SpeedMin	float32	`json:"speedMinKm"`
+	RPMMax		float32	`json:"rpmMax"`
+	RPMMin		float32	`json:"rpmMix"`
+	TempMax		float32	`json:"tempMaxCº"`
+	TempMin		float32	`json:"tempMinCº"`
+	PressureMax	float32	`json:"pressureMaxBar"`
+	PressureMin	float32	`json:"pressureMinBar"`
 }
 
-type processor struct {
-	Interval 	time.Duration
-	I	int		`json:"intervalSeconds"`
+// Client-side config
+type client struct {
+	FileDir 	string `json:"fileDir"`
 }
 
-type logger struct {
-	MaxLines 	int		`json:"maxLines"`
-	FileDir 	string	`json:"fileDir"`
-}
+// Global config instances
+var Server server
+var Client client
 
-var Sensor sensor
-var Processor processor
-var Logger logger
-
+// LoadConfig reads config.json and configures Server and Client
 func LoadConfig() {
+	// Open the file
 	file, err := os.Open("config.json")
 	if err != nil {
 		fmt.Println("Error loading configuration: ", err)
@@ -38,22 +43,24 @@ func LoadConfig() {
 	}
 	defer file.Close()
 
-	temp := struct {
-		S	sensor    `json:"sensor"`
-		P	processor `json:"processor"`
-		L   logger    `json:"logger"`
-	}{}
+	// Read the file
 	decoder := json.NewDecoder(file)
+
+	// Parse it into the temp struct
+	temp := struct {
+		S server `json:"server"`
+		C client `json:"client"`
+	}{}
 	err = decoder.Decode(&temp)
 	if err != nil {
 		fmt.Println("Error loading configuration: ", err)
 		return
 	}
 
-	Sensor = temp.S
-	Processor = temp.P
-	Logger = temp.L
+	// Copy parsed values into globals
+	Server = temp.S
+	Client = temp.C
 
-	Sensor.Interval = time.Duration(Sensor.I) * time.Second
-	Processor.Interval = time.Duration(Processor.I) * time.Second
+	// Derive time.Duration from milliseconds
+	Server.Interval = time.Duration(Server.I) * time.Millisecond
 }

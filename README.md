@@ -1,6 +1,6 @@
-# TM Software H11: Task 1
+# TM Software H11: Task 2
 
-This Go project models a lightweight sensor analytics pipeline: a sensor goroutine synthesizes pressure/temperature samples, a processor goroutine batches and summarises them, and a logger goroutine persists each summary with simple file rotation logic.
+This project simulates a simple telemetry pipeline using UDP sockets. A server produces random vehicle readings, sends them over UDP, and a client listens, decodes the JSON payloads, and writes them to timestamped log files.
 
 ## Table of Contents
 - [Features](#features)
@@ -11,10 +11,10 @@ This Go project models a lightweight sensor analytics pipeline: a sensor gorouti
 - [Development Notes](#development-notes)
 
 ## Features
-- Sensor that generates random pressure and temperature readings at a configurable interval.
-- Processor that buffers readings, computes average/min/max statistics concurrently, and emits structured `Result` values.
-- Logger that writes each result to timestamped log files, enforcing a per-file line limit and creating new files as needed.
-- Centralised configuration loader that maps `config.json` values into typed packages, exposing ready-to-use `time.Duration` intervals.
+- UDP server that generates vehicle telemetry (speed, RPM, temperature, pressure) with configurable ranges.
+- UDP client that receives telemetry, parses the JSON payload, and logs the data with creation and receipt timestamps.
+- Shared `modules/model` package defining the telemetry schema consumed by both server and client.
+- Centralised configuration via `config.json` for ports, send intervals, telemetry range limits, and client log directory.
 
 ## Repository Layout
 ```
@@ -27,33 +27,40 @@ TM-software-H11
 ├───config
 │       config.go
 └───modules
-        logger.go
-        processor.go
-        sensor.go
+    ├───client
+    │       UDPClient.go
+    ├───model
+    │       telemetry.go
+    └───server
+            UDPServer.go
 ```
 
 ## Getting Started
 1. Install Go 1.21 or newer.
-2. Review `config.json` to tune sensor ranges, batch cadence, and max log lines.
-3. Run the application from the repository root: 
-```bash
-go run main.go
-```
-4. Observe console output for generated samples. Telemetry logs are written under the directory specified by `client.fileDir` (default: `logs`).
+2. Review and adjust `config.json` to match your port, interval, and telemetry range requirements.
+3. Run the application from the repository root:
+   ```bash
+   go run main.go
+   ```
+4. Observe console output for server/client startup messages. Telemetry logs are written under the directory specified by `client.fileDir` (default: `logs`).
 
 ## Configuration
-`config.json` is read once at startup by `config.LoadConfig()` and drives runtime behaviour:
-- `sensor.intervalSeconds`, `sensor.minPressure`, `sensor.maxPressure`, `sensor.minTemp`, `sensor.maxTemp` define the random value ranges and sampling cadence.
-- `processor.intervalSeconds` controls how long the processor buffers readings before producing a batch summary.
-- `logger.maxLines` and `logger.fileDir` determine when log rotation occurs and where summary files are stored.
+`config.json` controls runtime behaviour:
+- `server.clientPort`: UDP port used by both server and client.
+- `server.intervalMiliSeconds`: delay between telemetry messages.
+- `server.vehicleID`: identifier embedded in each telemetry record.
+- `server.*Min/*Max`: numeric ranges for randomly generated readings.
+- `client.fileDir`: directory where the client writes log files.
 
-Configuration is loaded at startup by `config.LoadConfig()`; updates require restarting the program.
+Configuration is loaded at startup by `config.LoadConfig()`; updates require restarting the program.
 
 ## Telemetry Flow
-1. `modules.Sensor` ticks based on `config.Sensor.Interval`, synthesises a `SensorData`, and sends it to the shared `dataChan`.
-2. `modules.Processor` collects readings until the processor interval elapses, fans calculations out to goroutines, then sends a consolidated `Result` into `resultChan`.
-3. `modules.Logger` reads each `Result`, appends a formatted line to the active log file, and rotates when the configured maximum line count is reached.
+1. The server builds a `model.Telemetry` instance, stamps it with `CreatedAt`, and marshals it to JSON.
+2. The server sends the JSON datagram to the configured UDP port.
+3. The client reads the datagram, unmarshals it into `model.Telemetry`, and writes a formatted log entry:
+   - Log entries include both the `CreatedAt` timestamp and the local receipt time with microsecond precision.
 
 ## Development Notes
-- `main.go` wires the pipeline by creating channels and starting the three goroutines, using `select {}` to keep the program alive.
-- The processor's fan-out/fan-in pattern is educational; a single-pass reducer would be more efficient but less illustrative of concurrency.
+- The server and client run in separate goroutines launched from `main.go`; the main goroutine blocks with `select {}`.
+- Telemetry values rely on `math/rand`; seeding or alternative distributions can be added in `modules/server/UDPServer.go`.
+- Logs are appended via the standard `log` package with formatting customisations in `modules/client/UDPClient.go`.

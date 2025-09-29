@@ -1,0 +1,74 @@
+package server
+
+import (
+	"encoding/json"
+	"fmt"
+	"math/rand"
+	"net"
+	"time"
+	"github.com/vasyl-ks/TM-software-H11/config"
+	"github.com/vasyl-ks/TM-software-H11/modules/model"
+)
+
+
+
+/*
+UDPServer simulates a vehicle telemetry server.
+It generates random Telemetry data at a fixed interval, 
+marshals it to JSON and sends it via UDP to localhost client address 
+*/
+func UDPServer() {
+	telemetryInterval := config.Server.Interval // defines how often Telemetry is generated and sent.
+	clientPort := config.Server.ClientPort // defines the UDP port to which telemetry messages are sent.
+
+	// Client address
+	clientAddr := net.UDPAddr{
+		IP:   net.ParseIP("127.0.0.1"),
+		Port: clientPort,
+	}
+
+	// Create connection
+	conn, err := net.DialUDP("udp", nil, &clientAddr)
+	if err != nil {
+		fmt.Println("Error connecting:", err)
+		panic(err)
+	}
+	defer conn.Close()
+	fmt.Println("UDPServer sending telemetry to", clientAddr.String())
+
+	// Create ticker
+	ticker := time.NewTicker(telemetryInterval)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		vehicleID := config.Server.VehicleID
+		minS, maxS := config.Server.SpeedMin, config.Server.SpeedMax
+		minR, maxR := config.Server.RPMMin, config.Server.RPMMax 
+		minT, maxT := config.Server.TempMin, config.Server.TempMax
+		minP, maxP := config.Server.TempMin, config.Server.TempMax
+
+		// Create a random telemetry
+		t := model.Telemetry{
+			VehicleID:   vehicleID,
+			Speed:       rand.Float32() * (maxS - minS) + minS,	// 0–200 km/h
+			RPM:         rand.Float32() * (maxR - minR) + minR, // 0–8000 rpm
+			Temperature: rand.Float32() * (maxT - minT) + minT, // 0–100 °C
+			Pressure:    rand.Float32() * (maxP - minP) + minP, // 0–10 bar
+			CreatedAt:   time.Now().UTC(),						// Time of creation
+		}
+
+		// Marshal telemetry to JSON
+		data, err := json.Marshal(t)
+		if err != nil {
+    		fmt.Println("Error marshalling:", err)
+    		continue
+		}
+
+		// Send JSON via UDP
+		_, err = conn.Write(data)
+		if err != nil {
+			fmt.Println("Error sending:", err)
+			continue
+		}
+	}
+}

@@ -1,16 +1,19 @@
 {
-    "sensor": {
-        "intervalSeconds": 1,
-	    "maxPressure": 10,
-	    "minPressure": 0,
-	    "maxTemp": 50,
-	    "minTemp": 0
+    "server": {
+        "clientPort": 10000,
+        "intervalMiliSeconds": 100,
+        
+        "vehicleID": "V123",
+	    "speedMaxKm": 200,
+	    "speedMinKm": 0,
+	    "rpmMax": 8000,
+	    "rpmMix": 0,
+	    "tempMaxCº": 100,
+	    "tempMinCº": 0,
+	    "pressureMaxBar": 10,
+	    "pressureMinBar": 0
     },
-    "processor": {
-        "intervalSeconds": 10
-    },
-    "logger": {
-        "maxLines": 10,
-        "fileDir": "DATA"
+    "client": {
+        "fileDir": "logs"
     }
 }
