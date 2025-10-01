@@ -34,6 +34,7 @@ type logger struct {
 
 type senderANDlistener struct {
 	UDPPort int `json:"udpPort"`
+	BufferSize int `json:"bufferSize"`
 }
 
 // Global config instances

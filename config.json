@@ -19,6 +19,7 @@
         "fileDir": "logs"
     },
     "senderANDlistener": {
-        "udpPort": 10000
+        "udpPort": 10000,
+        "bufferSize": 1024
     }
 }

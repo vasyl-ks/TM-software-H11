@@ -22,7 +22,7 @@ func Listen(out chan<- []byte) {
 	defer conn.Close()
 	fmt.Printf("Listening on %s", conn.LocalAddr())
 
-	buf := make([]byte, 1024) // Buffer for incoming datagram
+	buf := make([]byte, config.SenderANDListener.BufferSize) // Buffer for incoming datagram
 	for {
 		// Read one datagram and track the sender
 		n, _, err := conn.ReadFromUDP(buf)

@@ -68,7 +68,7 @@ TM-software-H11/
 - `sensor.intervalMilliSeconds`, `sensor.minSpeed`, `sensor.maxSpeed`, `sensor.minPressure`, `sensor.maxPressure`, `sensor.minTemp`, `sensor.maxTemp` define the random value ranges and sampling cadence.
 - `processor.intervalMilliSeconds` sets how often batches close and statistics are emitted.
 - `logger.maxLines` and `logger.fileDir` govern log rotation and storage location for client output files.
-- `senderANDlistener.udpPort` specifies the UDP port used by both the server sender and client listener on localhost.
+- `senderANDlistener.udpPort` specifies the UDP port used by both the server sender and client listener on localhost, while `senderANDlistener.bufferSize` sets the byte slice size used when reading and sending datagrams.
 
 Configuration is read once at process start; update the file and restart the application to apply changes.
 
