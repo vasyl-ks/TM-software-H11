@@ -1,4 +1,4 @@
-# TM Software H11: Task 1
+# TM Software H11: Task 2
 
 This Go project simulates a basic vehicle telemetry system: the server generates sensor readings, groups them into summaries, and sends those over UDP; the client listens for these summaries, turns them into structured data, and saves them to log files.
 
