@@ -1,4 +1,4 @@
-package server
+package hub
 
 import (
 	"encoding/json"
@@ -10,9 +10,9 @@ import (
 )
 
 /*
-Send receives ResultData from a channel, marshals it to JSON and sends it via UDP to a localhost client.
+SendUDP receives ResultData from a channel, marshals it to JSON-encoded []byte and sends it via UDP to a localhost client.
 */
-func Send(resultChan <-chan model.ResultData) {
+func SendUDP(resultChan <-chan model.ResultData) {
 
 	// Client address
 	clientAddr := net.UDPAddr{
@@ -30,7 +30,7 @@ func Send(resultChan <-chan model.ResultData) {
 	fmt.Println("Server sending data to", clientAddr.String())
 
 	for resultData := range resultChan {
-		// Marshal ResultData to JSON
+		// Marshal ResultData to JSON-encoded []byte
 		data, err := json.Marshal(resultData)
 		if err != nil {
 			fmt.Println("Error marshalling", err)

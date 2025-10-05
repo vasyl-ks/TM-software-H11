@@ -2,23 +2,30 @@ package main
 
 import (
 	"github.com/vasyl-ks/TM-software-H11/config"
-	clientpkg "github.com/vasyl-ks/TM-software-H11/internal/client"
-    serverpkg "github.com/vasyl-ks/TM-software-H11/internal/server"
+	generator "github.com/vasyl-ks/TM-software-H11/internal/generator"
+	hub		  "github.com/vasyl-ks/TM-software-H11/internal/hub"
+	consumer  "github.com/vasyl-ks/TM-software-H11/internal/consumer"
+	modelPkg  "github.com/vasyl-ks/TM-software-H11/internal/model"
 )
 
 /*
-main loads configuration values, and then calls the Server goroutine.
-- Server generates SensorData, process it into Result and then sends it via UDP.
-- Client listens for raw JSON datagrams, parses them to ResultData and logs them.
+main loads configuration values, creates an internal channel, and then calls the internal goroutines.
+- Generator produces SensorData, process it into ResultData and then sends it through internalChan.
+- Hub receives ResultData from internalChan, and sends it via UDP to TelemetryLogger.
+- Consumer listens for raw JSON datagrams, parses them to ResultData and logs them.
 The final "select {}" keep the program running indefinitely.
 */
 func main() {
 	// Load configuration (const variables)
 	config.LoadConfig()
 
-	// Run Server and Client.
-	go serverpkg.Server()
-	go clientpkg.Client()
+	// Creates internal channel of ResultData between Generator and Hub.
+	internalChan := make(chan modelPkg.ResultData)
+
+	// Run Generator, Hub and Consumer.
+	go generator.Run(internalChan)
+	go hub.Run(internalChan)
+	go consumer.Run()
 
 	select {}
 }
