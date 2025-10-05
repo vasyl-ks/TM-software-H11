@@ -1,4 +1,4 @@
-package internal
+package client
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"time"
 	"log"
 	"github.com/vasyl-ks/TM-software-H11/config"
-	"github.com/vasyl-ks/TM-software-H11/model"
+	"github.com/vasyl-ks/TM-software-H11/internal/model"
 )
 
 /*

@@ -1,8 +1,7 @@
 package server
 
 import (
-	"github.com/vasyl-ks/TM-software-H11/model"
-	"github.com/vasyl-ks/TM-software-H11/server/internal"
+	"github.com/vasyl-ks/TM-software-H11/internal/model"
 )
 
 /*
@@ -17,7 +16,7 @@ func Server() {
 	resultChan := make(chan model.ResultData)
 
 	// Launch concurrent goroutines.
-	go internal.Sensor(dataChan)
-	go internal.Process(dataChan, resultChan)
-	go internal.Send(resultChan)
+	go Sensor(dataChan)
+	go Process(dataChan, resultChan)
+	go Send(resultChan)
 }

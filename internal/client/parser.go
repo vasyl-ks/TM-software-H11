@@ -1,9 +1,9 @@
-package internal
+package client
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/vasyl-ks/TM-software-H11/model"
+	"github.com/vasyl-ks/TM-software-H11/internal/model"
 )
 
 /*

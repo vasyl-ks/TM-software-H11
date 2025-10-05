@@ -1,10 +1,10 @@
-package internal
+package server
 
 import (
 	"time"
 
 	"github.com/vasyl-ks/TM-software-H11/config"
-	"github.com/vasyl-ks/TM-software-H11/model"
+	"github.com/vasyl-ks/TM-software-H11/internal/model"
 )
 
 // getLastTime returns the latest timestamp from a slice of SensorData.

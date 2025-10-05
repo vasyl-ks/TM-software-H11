@@ -1,8 +1,7 @@
 package client
 
 import (
-	"github.com/vasyl-ks/TM-software-H11/model"
-	"github.com/vasyl-ks/TM-software-H11/client/internal"
+	"github.com/vasyl-ks/TM-software-H11/internal/model"
 )
 
 /*
@@ -17,7 +16,7 @@ func Client() {
 	resultChan := make(chan model.ResultData)
 
 	// Launch concurrent goroutines.
-	go internal.Listen(byteChan)
-	go internal.Parse(byteChan, resultChan)
-	go internal.Log(resultChan)
+	go Listen(byteChan)
+	go Parse(byteChan, resultChan)
+	go Log(resultChan)
 }

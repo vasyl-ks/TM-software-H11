@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/vasyl-ks/TM-software-H11/config"
-	"github.com/vasyl-ks/TM-software-H11/server"
-	"github.com/vasyl-ks/TM-software-H11/client"
+	clientpkg "github.com/vasyl-ks/TM-software-H11/internal/client"
+    serverpkg "github.com/vasyl-ks/TM-software-H11/internal/server"
 )
 
 /*
@@ -17,8 +17,8 @@ func main() {
 	config.LoadConfig()
 
 	// Run Server and Client.
-	go server.Server()
-	go client.Client()
+	go serverpkg.Server()
+	go clientpkg.Client()
 
 	select {}
 }
