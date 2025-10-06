@@ -14,9 +14,10 @@ func Run() {
 	// Create unbuffered channels.
 	byteChan := make(chan []byte)
 	resultChan := make(chan model.ResultData)
+	commandChan := make(chan model.Command)
 
 	// Launch concurrent goroutines.
 	go Listen(byteChan)
-	go Parse(byteChan, resultChan)
-	go Log(resultChan)
+	go Parse(byteChan, resultChan, commandChan)
+	go Log(resultChan, commandChan)
 }

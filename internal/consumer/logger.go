@@ -10,13 +10,14 @@ import (
 )
 
 /*
-Log receives ResultData from a channel and logs them into file.
+Log receives ResultData and Command messages from their respective channels
+and logs them to rotating log files.
 - Each file contains up to maxLines entries.
 - Once the limit is reached, the current file is closed and a new file is created.
 - Files are named using the creation timestamp in the format "YYYYMMDD_hhmmss".
 - If terminated early, the current file may have fewer than maxLines; a new file is created on the next run.
 */
-func Log(in <-chan model.ResultData) {
+func Log(inResult <-chan model.ResultData, inCommand <-chan model.Command) {
 	lineCount := 0
 	fileDir := config.Logger.FileDir // defines directory where the log is saved.
 	maxLines := config.Logger.MaxLines // defines the maximum number of ResultData to log in a single file.
@@ -39,17 +40,43 @@ func Log(in <-chan model.ResultData) {
 	log.SetOutput(file)
 	log.SetFlags(0)
 
-	for resultData := range in { // Receive JSON
-		// Write in the file
-        log.Printf(
-            "|| Created at %s, Processed at %s, Logged at %s | AvgSpeed: %5.2f, MinSpeed: %5.2f, MaxSpeed: %5.2f | AvgTemp: %5.2f, MinTemp: %5.2f, MaxTemp: %5.2f | AvgPressure: %4.2f, MinPressure: %4.2f, MaxPressure: %4.2f ||\n",
-            resultData.CreatedAt.Format("15:04:05.000000"),
-            resultData.ProcessedAt.Format("15:04:05.000000"),
-            time.Now().Local().Format("15:04:05.000000"),
-            resultData.AverageSpeed, 	resultData.MinSpeed, 	resultData.MaxSpeed,
-            resultData.AverageTemp, 	resultData.MinTemp, 	resultData.MaxTemp,
-            resultData.AveragePressure, resultData.MinPressure, resultData.MaxPressure,
-        )
+	for {
+		select {
+			// Receive ResultData
+			case resultData, ok := <-inResult:
+			if !ok {
+				inResult = nil // channel closed
+				continue
+			}
+			// Log in the file
+       		log.Printf(
+        	    "[DATA] || Created at %s, Processed at %s, Logged at %s | AvgSpeed: %5.2f, MinSpeed: %5.2f, MaxSpeed: %5.2f | AvgTemp: %5.2f, MinTemp: %5.2f, MaxTemp: %5.2f | AvgPressure: %4.2f, MinPressure: %4.2f, MaxPressure: %4.2f ||\n",
+        	    resultData.CreatedAt.Format("15:04:05.000000"),
+        	    resultData.ProcessedAt.Format("15:04:05.000000"),
+        	    time.Now().Local().Format("15:04:05.000000"),
+        	    resultData.AverageSpeed, 	resultData.MinSpeed, 	resultData.MaxSpeed,
+        	    resultData.AverageTemp, 	resultData.MinTemp, 	resultData.MaxTemp,
+        	    resultData.AveragePressure, resultData.MinPressure, resultData.MaxPressure,
+			)
+
+			// Receive ResultData
+			case cmd, ok := <-inCommand:
+			if !ok {
+				inCommand = nil // channel closed
+				continue
+			}
+			// Log in the file
+			log.Printf("[COMMAND] || Received at %s | Action: %s | Params: %+v ||",
+				time.Now().Local().Format("15:04:05.000000"),
+				cmd.Action,
+				cmd.Params,
+			)
+		}
+
+		// Exit if both channels are closed
+		if inResult == nil && inCommand == nil {
+			break
+		}
 
 		lineCount++
 		if lineCount >= maxLines {
