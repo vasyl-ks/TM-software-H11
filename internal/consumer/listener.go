@@ -12,7 +12,7 @@ Listen binds a UDP socket on config.Sender.ClientPort and forwards incoming data
 - Copies each datagram into a new slice to avoid buffer reuse.
 */
 func Listen(out chan<- []byte) {
-	addr := net.UDPAddr{Port: config.SenderANDListener.UDPPort} // UDP Address
+	addr := net.UDPAddr{Port: config.Hub.Port} // UDP Address
 
 	// Listen for UDP Traffic
 	conn, err := net.ListenUDP("udp", &addr)
@@ -22,7 +22,7 @@ func Listen(out chan<- []byte) {
 	defer conn.Close()
 	fmt.Printf("Listening on %s", conn.LocalAddr())
 
-	buf := make([]byte, config.SenderANDListener.BufferSize) // Buffer for incoming datagram
+	buf := make([]byte, config.Hub.BufferSize) // Buffer for incoming datagram
 	for {
 		// Read one datagram and track the sender
 		n, _, err := conn.ReadFromUDP(buf)

@@ -18,8 +18,8 @@
         "maxLines": 5000,
         "fileDir": "logs"
     },
-    "senderANDlistener": {
-        "udpPort": 10000,
+    "hub": {
+        "port": 10000,
         "bufferSize": 1024
     }
 }

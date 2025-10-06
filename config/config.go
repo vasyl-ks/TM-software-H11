@@ -32,8 +32,8 @@ type logger struct {
 	FileDir  string `json:"fileDir"`
 }
 
-type senderANDlistener struct {
-	UDPPort int `json:"udpPort"`
+type hub struct {
+	Port       int `json:"port"`
 	BufferSize int `json:"bufferSize"`
 }
 
@@ -42,7 +42,7 @@ var Vehicle vehicle
 var Sensor sensor
 var Processor processor
 var Logger logger
-var SenderANDListener senderANDlistener
+var Hub hub
 
 // LoadConfig reads config.json and configures
 func LoadConfig() {
@@ -59,11 +59,11 @@ func LoadConfig() {
 
 	// Parse it into a temp struct
 	temp := struct {
-		V   vehicle           `json:"vehicle"`
-		Sn  sensor            `json:"sensor"`
-		P   processor         `json:"processor"`
-		L   logger            `json:"logger"`
-		SaL senderANDlistener `json:"senderANDlistener"`
+		V   vehicle   `json:"vehicle"`
+		S  sensor    `json:"sensor"`
+		P   processor `json:"processor"`
+		L   logger    `json:"logger"`
+		H hub       `json:"hub"`
 	}{}
 	err = decoder.Decode(&temp)
 	if err != nil {
@@ -72,10 +72,10 @@ func LoadConfig() {
 	}
 
 	// Copy parsed values into globals
-	Sensor = temp.Sn
+	Sensor = temp.S
 	Processor = temp.P
 	Logger = temp.L
-	SenderANDListener = temp.SaL
+	Hub = temp.H
 
 	// Derive time.Duration to Seconds
 	Sensor.Interval = time.Duration(Sensor.I) * time.Millisecond

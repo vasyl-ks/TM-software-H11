@@ -10,7 +10,7 @@ Generator initializes the dataChan and resultChan channels, then calls the Senso
 - Process receives SensorData, calculates statistics, builds a Result, and sends it through resultChan.
 */
 func Run(resultChan chan<- model.ResultData) {
-	// Create unbuffered channels.
+	// Create unbuffered channel.
 	dataChan := make(chan model.SensorData)
 
 	// Launch concurrent goroutines.

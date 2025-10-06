@@ -1,12 +1,57 @@
 package hub
 
-import "github.com/vasyl-ks/TM-software-H11/internal/model"
+import (
+	"net/http"
+	"github.com/vasyl-ks/TM-software-H11/internal/model"
+)
 
 /*
-Generator calls the UDPSend goroutine.
-- SendUDP receives ResultData from a channel, marshals it to JSON-encoded []byte and sends it via UDP to a localhost client.
+Hub acts as a central bridge between the Generator, Frontend, and Consumer.
+- Generator ↔ Hub: exchanges ResultData and Command via internal channels.
+- Frontend ↔ Hub: exchanges Command and ResultData over WebSocket.
+- Consumer ↔ Hub: sends ResultData via UDP and Command via TCP.
 */
 func Run(resultChan <-chan model.ResultData) {
-	// Launch concurrent goroutines.
-	go SendUDP(resultChan)
+	// Create unbuffered channel.
+	commandToConsumerChan := make(chan model.Command)
+
+	// WS
+	http.HandleFunc("/api/stream", func(w http.ResponseWriter, r *http.Request) {
+		// Create Connection
+		conn := CreateConnWS(w, r)
+		if conn == nil {
+			return
+		}
+		defer conn.Close()
+
+		// Launch concurrent goroutines
+		go ReceiveCommandFromFrontEnd(conn, commandToConsumerChan)
+		go SendResultToFrontEnd(conn, resultChan)
+	})
+
+	// UDP
+	{
+		// Create Connection
+		conn := CreateConnUDP()
+		if conn == nil {
+			return
+		}
+		defer conn.Close()
+
+		// Launch concurrent goroutines
+		go SendResultToConsumer(conn, resultChan)
+	}
+
+	// TCP
+	{
+		// Create Connection
+		conn := CreateConnTCP()
+		if conn == nil {
+			return
+		}
+		defer conn.Close()
+
+		// Launch concurrent goroutines
+		go SendCommandToConsumer(conn, commandToConsumerChan)
+	}
 }
