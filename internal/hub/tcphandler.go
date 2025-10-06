@@ -25,9 +25,9 @@ SendCommandToConsumer receives Command data from a channel,
 marshals it to JSON-encoded []byte
 and sends it via TCP to a localhost consumer.
 */
-func SendCommandToConsumer(conn net.Conn, in <-chan model.Command) {
+func SendCommandToConsumer(conn net.Conn, inChan <-chan model.Command) {
 	// Receive Command from channel
-	for command := range in {
+	for command := range inChan {
 		// Marshal ResultData to JSON-encoded []byte
 		data, err := json.Marshal(command)
 		if err != nil {

@@ -28,7 +28,7 @@ ListenCommandWS listens for a command from the WebSocket
 parses it to a Go struct
 and forwards it to a channel.
 */
-func ReceiveCommandFromFrontEnd(conn *websocket.Conn, out chan<- model.Command) {
+func ReceiveCommandFromFrontEnd(conn *websocket.Conn, outChan1 chan<- model.Command, outChan2 chan<- model.Command) {
 	for {
 		// Listen for WS Command JSON
 		_, msg, err := conn.ReadMessage()
@@ -45,7 +45,8 @@ func ReceiveCommandFromFrontEnd(conn *websocket.Conn, out chan<- model.Command) 
 		}
 
 		// Sends it to channel
-		out <- cmd
+		outChan1 <- cmd
+		outChan2 <- cmd
 	}
 }
 
@@ -54,9 +55,9 @@ SendResultToFrontEnd receives ResultData from a channel,
 marshals it to JSON-encoded []byte 
 and sends it via WS to the WebSocket client.
 */
-func SendResultToFrontEnd(conn *websocket.Conn, in <-chan model.ResultData) {
+func SendResultToFrontEnd(conn *websocket.Conn, inChan <-chan model.ResultData) {
 	// Receive ResultData from channel
-	for result := range in {
+	for result := range inChan {
 		// Marshal ResultData to JSON-encoded []byte
 		data, err := json.Marshal(result)
 		if err != nil {

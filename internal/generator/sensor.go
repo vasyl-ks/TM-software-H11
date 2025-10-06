@@ -11,7 +11,7 @@ import (
 Sensor simulates a sensor by generating random speed, pressure and temperature
 readings every sensorInterval and sending them to the provided channel.
 */
-func Sensor(out chan<- model.SensorData) {
+func Sensor(inCommandChan <-chan model.Command, outChan chan<- model.SensorData) {
 	sensorInterval := config.Sensor.Interval // defines how often a new sensor reading is generated.
 
 	ticker := time.NewTicker(sensorInterval)
@@ -29,6 +29,6 @@ func Sensor(out chan<- model.SensorData) {
 			Temperature: rand.Float32()*(maxT-minT) + minT, // 0-50 °C
 			CreatedAt: time.Now().Local(),
 		}
-		out <- data
+		outChan <- data
 	}
 }

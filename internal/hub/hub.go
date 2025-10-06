@@ -11,9 +11,9 @@ Hub acts as a central bridge between the Generator, Frontend, and Consumer.
 - Frontend ↔ Hub: exchanges Command and ResultData over WebSocket.
 - Consumer ↔ Hub: sends ResultData via UDP and Command via TCP.
 */
-func Run(resultChan <-chan model.ResultData) {
+func Run(inResultChan <-chan model.ResultData, outCommandChan chan<- model.Command) {
 	// Create unbuffered channel.
-	commandToConsumerChan := make(chan model.Command)
+	internalCommandChan := make(chan model.Command)
 
 	// WS
 	http.HandleFunc("/api/stream", func(w http.ResponseWriter, r *http.Request) {
@@ -25,8 +25,8 @@ func Run(resultChan <-chan model.ResultData) {
 		defer conn.Close()
 
 		// Launch concurrent goroutines
-		go ReceiveCommandFromFrontEnd(conn, commandToConsumerChan)
-		go SendResultToFrontEnd(conn, resultChan)
+		go ReceiveCommandFromFrontEnd(conn, internalCommandChan, outCommandChan)
+		go SendResultToFrontEnd(conn, inResultChan)
 	})
 
 	// UDP
@@ -39,7 +39,7 @@ func Run(resultChan <-chan model.ResultData) {
 		defer conn.Close()
 
 		// Launch concurrent goroutines
-		go SendResultToConsumer(conn, resultChan)
+		go SendResultToConsumer(conn, inResultChan)
 	}
 
 	// TCP
@@ -52,6 +52,6 @@ func Run(resultChan <-chan model.ResultData) {
 		defer conn.Close()
 
 		// Launch concurrent goroutines
-		go SendCommandToConsumer(conn, commandToConsumerChan)
+		go SendCommandToConsumer(conn, internalCommandChan)
 	}
 }

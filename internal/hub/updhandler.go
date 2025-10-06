@@ -29,9 +29,9 @@ SendResultToConsumer receives ResultData from a channel,
 marshals it to JSON-encoded []byte
 and sends it via UDP to a localhost client.
 */
-func SendResultToConsumer(conn *net.UDPConn, in <-chan model.ResultData) {
+func SendResultToConsumer(conn *net.UDPConn, inChan <-chan model.ResultData) {
 	// Receive ResultData from channel
-	for resultData := range in {
+	for resultData := range inChan {
 		// Marshal ResultData to JSON-encoded []byte
 		data, err := json.Marshal(resultData)
 		if err != nil {

@@ -17,7 +17,7 @@ and logs them to rotating log files.
 - Files are named using the creation timestamp in the format "YYYYMMDD_hhmmss".
 - If terminated early, the current file may have fewer than maxLines; a new file is created on the next run.
 */
-func Log(inResult <-chan model.ResultData, inCommand <-chan model.Command) {
+func Log(inResultChan <-chan model.ResultData, inCommandChan <-chan model.Command) {
 	lineCount := 0
 	fileDir := config.Logger.FileDir // defines directory where the log is saved.
 	maxLines := config.Logger.MaxLines // defines the maximum number of ResultData to log in a single file.
@@ -43,9 +43,9 @@ func Log(inResult <-chan model.ResultData, inCommand <-chan model.Command) {
 	for {
 		select {
 			// Receive ResultData
-			case resultData, ok := <-inResult:
+			case resultData, ok := <-inResultChan:
 			if !ok {
-				inResult = nil // channel closed
+				inResultChan = nil // channel closed
 				continue
 			}
 			// Log in the file
@@ -60,9 +60,9 @@ func Log(inResult <-chan model.ResultData, inCommand <-chan model.Command) {
 			)
 
 			// Receive ResultData
-			case cmd, ok := <-inCommand:
+			case cmd, ok := <-inCommandChan:
 			if !ok {
-				inCommand = nil // channel closed
+				inCommandChan = nil // channel closed
 				continue
 			}
 			// Log in the file
@@ -74,7 +74,7 @@ func Log(inResult <-chan model.ResultData, inCommand <-chan model.Command) {
 		}
 
 		// Exit if both channels are closed
-		if inResult == nil && inCommand == nil {
+		if inResultChan == nil && inCommandChan == nil {
 			break
 		}
 

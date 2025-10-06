@@ -19,12 +19,13 @@ func main() {
 	// Load configuration (const variables)
 	config.LoadConfig()
 
-	// Creates internal channel of ResultData between Generator and Hub.
-	internalChan := make(chan modelPkg.ResultData)
+	// Creates internal channel of ResultData and Command between Generator and Hub.
+	resultChan := make(chan modelPkg.ResultData)
+	commandChan := make(chan modelPkg.Command)
 
 	// Run Generator, Hub and Consumer.
-	go generator.Run(internalChan)
-	go hub.Run(internalChan)
+	go generator.Run(commandChan, resultChan)
+	go hub.Run(resultChan, commandChan)
 	go consumer.Run()
 
 	select {}

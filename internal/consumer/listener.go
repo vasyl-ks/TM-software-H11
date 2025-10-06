@@ -11,7 +11,7 @@ import (
 Listen binds a UDP socket on config.Sender.ClientPort and forwards incoming datagrams to out.
 - Copies each datagram into a new slice to avoid buffer reuse.
 */
-func Listen(out chan<- []byte) {
+func Listen(outChan chan<- []byte) {
 	addr := net.UDPAddr{Port: config.Hub.Port} // UDP Address
 
 	// Listen for UDP Traffic
@@ -36,6 +36,6 @@ func Listen(out chan<- []byte) {
 		copy(payload, buf[:n])
 
 		// Send the datagram through the channel
-		out <- payload
+		outChan <- payload
 	}
 }
