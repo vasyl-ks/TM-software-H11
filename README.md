@@ -31,8 +31,8 @@ TM-software-H11/
 │   config.json
 │   go.mod
 │   go.sum
+│   main_test.go
 │   main.go
-│   rd.md
 │   README.md
 ├───config
 │       config.go
@@ -57,8 +57,7 @@ TM-software-H11/
 │           resultData.go
 │           sensorData.go
 ├───logs
-└───test
-        main_test.go
+└───test_logs
 ```
 
 ## Getting Started
