@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"strconv"
 
 	"github.com/vasyl-ks/TM-software-H11/config"
 )
@@ -13,10 +14,8 @@ Listen binds a UDP socket on config.Sender.ClientPort and forwards incoming data
 - Copies each datagram into a new slice to avoid buffer reuse.
 */
 func Listen(outChan chan<- []byte, ready chan<- struct{}) {
-	addr := fmt.Sprintf(":%d", config.Hub.Port) // Address
-
 	// Listen for UDP Traffic
-	udpAddr, err := net.ResolveUDPAddr("udp", addr)
+	udpAddr, err := net.ResolveUDPAddr("udp", strconv.Itoa(config.Hub.UDPPort))
 	if err != nil {
 		fmt.Println("Error resolving UDP address:", err)
 		return
@@ -28,7 +27,7 @@ func Listen(outChan chan<- []byte, ready chan<- struct{}) {
 	}
 
 	// Listen for TCP Traffic
-	tcpListener, err := net.Listen("tcp", addr)
+	tcpListener, err := net.Listen("tcp", strconv.Itoa(config.Hub.TCPPort))
 	if err != nil {
 		fmt.Println("Error listening on TCP:", err)
 		return

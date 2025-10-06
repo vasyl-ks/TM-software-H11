@@ -2,6 +2,9 @@ package hub
 
 import (
 	"net/http"
+	"strconv"
+
+	"github.com/vasyl-ks/TM-software-H11/config"
 	"github.com/vasyl-ks/TM-software-H11/internal/model"
 )
 
@@ -28,7 +31,7 @@ func Run(inResultChan <-chan model.ResultData, outCommandChan chan<- model.Comma
 		go SendResultToFrontEnd(conn, inResultChan)
 	})
 	go func() {
-		http.ListenAndServe(":8080", nil)
+		http.ListenAndServe(":"+strconv.Itoa(config.Hub.WSPort), nil)
 	}()
 
 	// UDP

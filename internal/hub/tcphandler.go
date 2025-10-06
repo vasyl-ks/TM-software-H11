@@ -11,7 +11,7 @@ import (
 
 // CreateConnTCP establishes a TCP connection to the configured address and port.
 func CreateConnTCP() net.Conn {
-	address := fmt.Sprintf("127.0.0.1:%d", config.Hub.Port)
+	address := fmt.Sprintf("127.0.0.1:%d", config.Hub.TCPPort)
 	conn, err := net.Dial("tcp", address)
 	if err != nil {
 		fmt.Println("Error connecting via TCP:", err)

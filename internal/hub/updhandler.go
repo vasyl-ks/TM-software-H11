@@ -14,7 +14,7 @@ func CreateConnUDP() *net.UDPConn {
 	// Client address
 	clientAddr := net.UDPAddr{
 		IP:   net.ParseIP("127.0.0.1"),
-		Port: config.Hub.Port,
+		Port: config.Hub.UDPPort,
 	}
 	conn, err := net.DialUDP("udp", nil, &clientAddr)
 	if err != nil {

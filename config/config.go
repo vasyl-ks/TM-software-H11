@@ -20,6 +20,9 @@ type sensor struct {
 	MinPressure float32 `json:"minPressure"`
 	MaxTemp     float32 `json:"maxTemp"`
 	MinTemp     float32 `json:"minTemp"`
+	EcoMode		float32 `json:"ecoMode"`
+	NormalMode	float32 `json:"normalMode"`
+	SpeedMode	float32 `json:"speedMode"`
 }
 
 type processor struct {
@@ -33,7 +36,9 @@ type logger struct {
 }
 
 type hub struct {
-	Port       int `json:"port"`
+	UDPPort    int `json:"udpPort"`
+	TCPPort    int `json:"tcpPort"`
+	WSPort     int `json:"wsPort"`
 	BufferSize int `json:"bufferSize"`
 }
 
