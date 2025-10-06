@@ -78,7 +78,7 @@ TM-software-H11/
 5. Optionally, execute tests to simulate a frontend:
 
    ```bash
-   go test -v ./test
+   go test -v
    ```
 6. Watch logs under `/logs` — telemetry and commands are saved as `.jsonl` files.
 
@@ -121,7 +121,8 @@ Configuration is read once at process start; update the file and restart the app
    * Connects via WebSocket to `/api/stream`.
    * Sends commands (`{"action": "start"}` etc.) and receives live telemetry.
 5. **Tests**
-   * `test/main_test.go` simulates a frontend connection, sends commands with delays, and validates Hub responses.
+   * `main_test.go` simulates a frontend connection, sends commands with delays, and validates Hub responses.
+   * Watch test logs under `/test_logs` — saved as `.jsonl` files.
 
 ## Development Notes
 * The system is fully concurrent, using goroutines and channels for communication.
