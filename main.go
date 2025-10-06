@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/vasyl-ks/TM-software-H11/config"
+	consumer "github.com/vasyl-ks/TM-software-H11/internal/consumer"
 	generator "github.com/vasyl-ks/TM-software-H11/internal/generator"
-	hub		  "github.com/vasyl-ks/TM-software-H11/internal/hub"
-	consumer  "github.com/vasyl-ks/TM-software-H11/internal/consumer"
-	modelPkg  "github.com/vasyl-ks/TM-software-H11/internal/model"
+	hub "github.com/vasyl-ks/TM-software-H11/internal/hub"
+	modelPkg "github.com/vasyl-ks/TM-software-H11/internal/model"
 )
 
 /*
@@ -25,8 +25,14 @@ func main() {
 
 	// Run Generator, Hub and Consumer.
 	go generator.Run(commandChan, resultChan)
+
+	// Consumer must initialize UDP&TCP listeners, before Hub tries to connect.
+	ready := make(chan struct{})
+	go consumer.Run(ready)
+	<-ready
+	
 	go hub.Run(resultChan, commandChan)
-	go consumer.Run()
+	
 
 	select {}
 }

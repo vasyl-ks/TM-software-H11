@@ -26,6 +26,8 @@ marshals it to JSON-encoded []byte
 and sends it via TCP to a localhost consumer.
 */
 func SendCommandToConsumer(conn net.Conn, inChan <-chan model.Command) {
+	defer conn.Close()
+	
 	// Receive Command from channel
 	for command := range inChan {
 		// Marshal ResultData to JSON-encoded []byte

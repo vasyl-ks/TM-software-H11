@@ -30,6 +30,8 @@ marshals it to JSON-encoded []byte
 and sends it via UDP to a localhost client.
 */
 func SendResultToConsumer(conn *net.UDPConn, inChan <-chan model.ResultData) {
+	defer conn.Close()
+	
 	// Receive ResultData from channel
 	for resultData := range inChan {
 		// Marshal ResultData to JSON-encoded []byte

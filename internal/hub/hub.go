@@ -22,7 +22,6 @@ func Run(inResultChan <-chan model.ResultData, outCommandChan chan<- model.Comma
 		if conn == nil {
 			return
 		}
-		defer conn.Close()
 
 		// Launch concurrent goroutines
 		go ReceiveCommandFromFrontEnd(conn, internalCommandChan, outCommandChan)
@@ -36,7 +35,6 @@ func Run(inResultChan <-chan model.ResultData, outCommandChan chan<- model.Comma
 		if conn == nil {
 			return
 		}
-		defer conn.Close()
 
 		// Launch concurrent goroutines
 		go SendResultToConsumer(conn, inResultChan)
@@ -49,7 +47,6 @@ func Run(inResultChan <-chan model.ResultData, outCommandChan chan<- model.Comma
 		if conn == nil {
 			return
 		}
-		defer conn.Close()
 
 		// Launch concurrent goroutines
 		go SendCommandToConsumer(conn, internalCommandChan)

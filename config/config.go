@@ -60,10 +60,10 @@ func LoadConfig() {
 	// Parse it into a temp struct
 	temp := struct {
 		V   vehicle   `json:"vehicle"`
-		S  sensor    `json:"sensor"`
+		S   sensor    `json:"sensor"`
 		P   processor `json:"processor"`
 		L   logger    `json:"logger"`
-		H hub       `json:"hub"`
+		H   hub       `json:"hub"`
 	}{}
 	err = decoder.Decode(&temp)
 	if err != nil {
@@ -72,6 +72,7 @@ func LoadConfig() {
 	}
 
 	// Copy parsed values into globals
+	Vehicle = temp.V
 	Sensor = temp.S
 	Processor = temp.P
 	Logger = temp.L

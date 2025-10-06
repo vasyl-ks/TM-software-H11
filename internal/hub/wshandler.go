@@ -29,6 +29,8 @@ parses it to a Go struct
 and forwards it to a channel.
 */
 func ReceiveCommandFromFrontEnd(conn *websocket.Conn, outChan1 chan<- model.Command, outChan2 chan<- model.Command) {
+	defer conn.Close()
+	
 	for {
 		// Listen for WS Command JSON
 		_, msg, err := conn.ReadMessage()
