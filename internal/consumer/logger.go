@@ -83,7 +83,7 @@ func Log(inResultChan <-chan model.ResultData, inCommandChan <-chan model.Comman
 			file.Close()
 			
 			// Create a new file
-			filename := fmt.Sprintf("%s/sensor_log_%s.log", fileDir, time.Now().Format("20060102_150405"))
+			filename := fmt.Sprintf("%s/sensor_log_%s.jsonl", fileDir, time.Now().Format("20060102_150405"))
 			file, err = os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 			if err != nil {
 				fmt.Println("Error opening new log file:", err)

@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -8,10 +9,11 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/vasyl-ks/TM-software-H11/config"
 )
 
 func TestFrontendSimulation(t *testing.T) {
-	// --- Setup logging ---
+	// Setup logging
 	logFile, err := os.Create("test_logs.jsonl")
 	if err != nil {
 		t.Fatalf("failed to create log file: %v", err)
@@ -19,8 +21,11 @@ func TestFrontendSimulation(t *testing.T) {
 	defer logFile.Close()
 	logger := log.New(logFile, "", log.LstdFlags)
 
-	// --- Connect to running Hub ---
-	wsURL := "ws://localhost:8080/api/stream" // adjust port to your Hub
+	// Connect to running Hub
+	os.Chdir("..")
+	config.LoadConfig() // Config must be loaded, to use selected WSPort
+	fmt.Println(config.Hub.WSPort)
+	wsURL := fmt.Sprintf("ws://localhost:%d/api/stream", config.Hub.WSPort)
 	dialer := websocket.Dialer{HandshakeTimeout: 3 * time.Second}
 
 	conn, resp, err := dialer.Dial(wsURL, nil)
@@ -31,7 +36,7 @@ func TestFrontendSimulation(t *testing.T) {
 	defer resp.Body.Close()
 	logger.Printf("[INFO] Connected to Hub, status=%d\n", resp.StatusCode)
 
-	// --- Command sequence ---
+	// Command sequence
 	commands := []map[string]interface{}{
 		{"action": "mode", "params": "normal"},
 		{"action": "start"},
@@ -47,7 +52,7 @@ func TestFrontendSimulation(t *testing.T) {
 		{"action": "stop"},
 	}
 
-	// --- Reader goroutine: log all incoming messages ---
+	// Reader goroutine: log all incoming messages
 	done := make(chan struct{})
 	go func() {
 		defer close(done)
@@ -61,7 +66,7 @@ func TestFrontendSimulation(t *testing.T) {
 		}
 	}()
 
-	// --- Send commands with 1 s delay between each ---
+	// Send commands with 1 s delay between each
 	for i, cmd := range commands {
 		if err := conn.WriteJSON(cmd); err != nil {
 			t.Fatalf("failed to send command %d (%v): %v", i, cmd, err)
@@ -70,7 +75,7 @@ func TestFrontendSimulation(t *testing.T) {
 		time.Sleep(1 * time.Second)
 	}
 
-	// --- Graceful close ---
+	// Graceful close
 	closeFrame := websocket.FormatCloseMessage(websocket.CloseNormalClosure, "")
 	if err := conn.WriteControl(websocket.CloseMessage, closeFrame, time.Now().Add(time.Second)); err != nil {
 		logger.Printf("[WARN] Failed to send close frame: %v\n", err)
