@@ -1,6 +1,7 @@
-package test
+package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -13,8 +14,21 @@ import (
 )
 
 func TestFrontendSimulation(t *testing.T) {
+	_, cancel := context.WithCancel(context.Background())
+    t.Cleanup(cancel)
+
+	// Start main
+	go Start()
+
+	// Check directory
+	err := os.MkdirAll("test", 0755)
+	if err != nil {
+		fmt.Println("Error creating directory:", err)
+		return
+	}
+
 	// Setup logging
-	logFile, err := os.Create("test_logs.jsonl")
+	logFile, err := os.Create("test/test_logs.jsonl")
 	if err != nil {
 		t.Fatalf("failed to create log file: %v", err)
 	}
@@ -22,9 +36,6 @@ func TestFrontendSimulation(t *testing.T) {
 	logger := log.New(logFile, "", log.LstdFlags)
 
 	// Connect to running Hub
-	os.Chdir("..")
-	config.LoadConfig() // Config must be loaded, to use selected WSPort
-	fmt.Println(config.Hub.WSPort)
 	wsURL := fmt.Sprintf("ws://localhost:%d/api/stream", config.Hub.WSPort)
 	dialer := websocket.Dialer{HandshakeTimeout: 3 * time.Second}
 

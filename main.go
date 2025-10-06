@@ -9,13 +9,13 @@ import (
 )
 
 /*
-main loads configuration values, creates an internal channel, and then calls the internal goroutines.
+Start loads configuration values, creates an internal channel, and then calls the internal goroutines.
 - Generator produces SensorData, process it into ResultData and then sends it through internalChan.
 - Hub receives ResultData from internalChan, and sends it via UDP to TelemetryLogger.
 - Consumer listens for raw JSON datagrams, parses them to ResultData and logs them.
 The final "select {}" keep the program running indefinitely.
 */
-func main() {
+func Start() {
 	// Load configuration (const variables)
 	config.LoadConfig()
 
@@ -35,4 +35,8 @@ func main() {
 	
 
 	select {}
+}
+
+func main() {
+	Start()
 }
