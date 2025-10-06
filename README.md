@@ -1,87 +1,134 @@
-# TM Software H11: Task 2
+# TM Software H11: Task 3
 
-This Go project simulates a basic vehicle telemetry system: the server generates sensor readings, groups them into summaries, and sends those over UDP; the client listens for these summaries, turns them into structured data, and saves them to log files.
+This Go project simulates a complete vehicle telemetry system.
+It connects multiple components — a **Generator**, **Hub**, **Consumer**, and a **Frontend (WebSocket)** — that exchange telemetry and control commands in real time.
 
 ## Table of Contents
-- [Features](#features)
-- [Repository Layout](#repository-layout)
-- [Getting Started](#getting-started)
-- [Configuration](#configuration)
-- [Telemetry Flow](#telemetry-flow)
-- [Development Notes](#development-notes)
+* [Features](#features)
+* [Repository Layout](#repository-layout)
+* [Getting Started](#getting-started)
+* [Configuration](#configuration)
+* [System Flow](#system-flow)
+* [Development Notes](#development-notes)
 
 ## Features
-- Synthetic sensor that produces speed, pressure, and temperature samples at a configurable cadence.
-- Statistics processor that calculates min/avg/max values per batch using fan-out/fan-in goroutines before emitting `ResultData` summaries.
-- UDP sender that serializes each summary to JSON and delivers it to a localhost client on the configured port.
-- Client-side listener, parser, and rotating logger that persist the received summaries with consistent formatting.
-- Central configuration package that exposes strongly typed settings (`time.Duration` intervals, ports, limits) to every component.
-- Shared `model` package defining sensor and result payload schemas for server and client interoperability.
+* Synthetic **Generator** that simulates a vehicle, producing random sensor data (speed, pressure, temperature).
+* **Hub** that routes data and commands between Generator, Consumer, and Frontend:
+
+  * `ResultData` is sent to both the Frontend (WS) and Consumer (UDP).
+  * `Command` messages flow from the Frontend (WS) to the Generator and Consumer (TCP).
+* **Consumer** that receives and logs both telemetry results and commands in rotating `.jsonl` files.
+* Real-time **WebSocket communication** with the Frontend for live telemetry and remote control.
+* Dynamic **command handling**: the vehicle can start, stop, accelerate, or change driving mode (`eco`, `normal`, `speed`).
+* Centralized **config system** controlling intervals, modes, and ports.
+* Includes an automated **test suite** that simulates a frontend connection sending commands and logging responses.
 
 ## Repository Layout
+
 ```
 TM-software-H11/
 │   .gitignore
 │   config.json
 │   go.mod
+│   go.sum
 │   main.go
+│   rd.md
 │   README.md
-├───client
-│   │   client.go
-│   └───internal
-│           listener.go
-│           logger.go
-│           parser.go
 ├───config
 │       config.go
+├───internal
+│   ├───consumer
+│   │       consumer.go
+│   │       listener.go
+│   │       logger.go
+│   │       parser.go
+│   ├───generator
+│   │       generator.go
+│   │       processor.go
+│   │       sensor.go
+│   ├───hub
+│   │       hub.go
+│   │       tcphandler.go
+│   │       updhandler.go
+│   │       wshandler.go
+│   │
+│   └───model
+│           command.go
+│           resultData.go
+│           sensorData.go
 ├───logs
-│       sensor_log_20250928_193501.log
-├───model
-│       resultData.go
-│       sensorData.go
-└───server
-    │   Server.go
-    └───internal
-            processor.go
-            sender.go
-            sensor.go
+└───test
+        main_test.go
 ```
 
 ## Getting Started
+
 1. Install Go 1.21 or newer.
 2. Clone the repository and enter the project directory:
+
    ```bash
    git clone https://github.com/vasyl-ks/TM-software-H11.git
    cd TM-software-H11
    ```
-3. Inspect `config.json` to set the vehicle identifier, sensor ranges, batch interval, logger settings, and UDP port.
-4. Ensure the selected UDP port (default 10000) is available on localhost.
-5. From the repository root, run:
+3. Inspect and adjust `config.json` for your desired intervals, ports, and speed mode ratios.
+4. Run the system:
+
    ```bash
    go run main.go
    ```
-6. Watch the terminal for server/client status messages; log files are created under the directory specified by `logger.fileDir` (default `logs/`).
+5. Optionally, execute tests to simulate a frontend:
+
+   ```bash
+   go test -v ./test
+   ```
+6. Watch logs under `/logs` — telemetry and commands are saved as `.jsonl` files.
 
 ## Configuration
-`config.json` is loaded at startup by `config.LoadConfig()` and controls runtime behaviour:
-- `vehicle.vehicleID` tags every reading and result with the configured identifier.
-- `sensor.intervalMilliSeconds`, `sensor.minSpeed`, `sensor.maxSpeed`, `sensor.minPressure`, `sensor.maxPressure`, `sensor.minTemp`, `sensor.maxTemp` define the random value ranges and sampling cadence.
-- `processor.intervalMilliSeconds` sets how often batches close and statistics are emitted.
-- `logger.maxLines` and `logger.fileDir` govern log rotation and storage location for client output files.
-- `senderANDlistener.udpPort` specifies the UDP port used by both the server sender and client listener on localhost, while `senderANDlistener.bufferSize` sets the byte slice size used when reading and sending datagrams.
-
+`config.json` defines the runtime behavior and communication parameters:
+* **Vehicle**
+  * `vehicleID`: unique identifier for telemetry.
+* **Sensor**
+  * `intervalMilliSeconds`: how often new sensor data is generated.
+  * `minSpeed`, `maxSpeed`, `minPressure`, `maxPressure`, `minTemp`, `maxTemp`: generation ranges.
+  * `ecoMode`, `normalMode`, `speedMode`: scaling ratios for maximum speed behavior.
+* **Processor**
+  * `intervalMilliSeconds`: how often readings are aggregated into statistics.
+* **Logger**
+  * `maxLines`: maximum lines per log file before rotation.
+  * `fileDir`: directory for log storage.
+* **Hub**
+  * `udpPort`, `tcpPort`, `wsPort`: network ports for communication.
+  * `bufferSize`: size for UDP/TCP packet buffers.
 Configuration is read once at process start; update the file and restart the application to apply changes.
 
-## Telemetry Flow
-1. `server/internal.Sensor` wakes on `config.Sensor.Interval`, generates `model.SensorData`, and publishes it to `dataChan`.
-2. `server/internal.Process` buffers readings until `config.Processor.Interval` elapses, calculates statistics via concurrent helpers, and produces a `model.ResultData` summary.
-3. `server/internal.Send` serializes the summary to JSON and sends the datagram to `127.0.0.1:udpPort`.
-4. `client/internal.Listen` binds the same UDP port, clones each datagram, and forwards the raw bytes to `byteChan`.
-5. `client/internal.Parse` unmarshals the payload into `model.ResultData`, validating the JSON before passing it along.
-6. `client/internal.Log` writes formatted log entries, rotating files after `config.Logger.MaxLines` entries and timestamping every stage (created, processed, logged).
+## System Flow
+1. **Generator**
+   * `Sensor` continuously emits simulated sensor readings.
+   * Receives `Command` messages to alter vehicle behavior (start, stop, accelerate, mode).
+   * `Process` aggregates data into `ResultData` summaries and sends them to the Hub.
+2. **Hub**
+   * Acts as the central bridge between Generator, Frontend, and Consumer.
+   * Forwards telemetry (`ResultData`) to:
+     * Consumer (via UDP)
+     * Frontend (via WebSocket)
+   * Forwards control commands (`Command`) from the Frontend (via WebSocket) to:
+     * Generator (via internal channel)
+     * Consumer (via TCP)
+3. **Consumer**
+   * Listens for UDP results and TCP commands.
+   * Parses both `ResultData` and `Command` messages.
+   * Logs entries into rotating `.jsonl` files with timestamps.
+4. **Frontend**
+   * Connects via WebSocket to `/api/stream`.
+   * Sends commands (`{"action": "start"}` etc.) and receives live telemetry.
+5. **Tests**
+   * `test/main_test.go` simulates a frontend connection, sends commands with delays, and validates Hub responses.
 
 ## Development Notes
-- `main.go` loads configuration once, launches the server and client goroutines, and blocks forever with `select {}` to keep both halves running in a single binary.
-- The processor intentionally uses a fan-out/fan-in pattern for educational concurrency, even though a single-pass reducer would be more efficient.
-- UDP transport keeps server and client decoupled; both rely on the shared `model` definitions to guarantee compatible payloads.
-- The client logger sets `log` output per rotation to ensure each file receives consistent formatting and timestamps for troubleshooting end-to-end latency.
+* The system is fully concurrent, using goroutines and channels for communication.
+* Each transport layer (UDP, TCP, WS) runs independently but shares data via the Hub.
+* Generator speed adjusts based on commands in real time.
+* Frontend tests provide an end-to-end check of the communication pipeline.
+* Logs in `.jsonl` format are machine- and human-readable, suitable for further analysis.
+* At this moment, temperature and pressure values are independent and randomly generated; they are not linked to vehicle state.
+* Once the program starts, the vehicle begins sending telemetry automatically, but it must be started and accelerated through commands to simulate motion.
