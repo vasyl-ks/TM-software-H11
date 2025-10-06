@@ -59,21 +59,17 @@ func Sensor(inCommandChan <-chan model.Command, outChan chan<- model.SensorData)
 				var maxAllowed float32
 				switch mode {
 					case "eco":
-						maxAllowed = maxS * 0.6
+						maxAllowed = maxS * 0.5
 					case "normal":
-						maxAllowed = maxS * 0.85
+						maxAllowed = maxS * 0.8
 					case "speed":
 						maxAllowed = maxS
 					default:
-						maxAllowed = maxS * 0.85
+						maxAllowed = maxS * 0.8
 				}
 
 				// simulate speed
 				if started {
-					// random acceleration/deceleration
-					fluctuation := rand.Float32()*2 - 1 // ±1 km/h random noise
-					currentSpeed += fluctuation
-					
 					if currentSpeed < minS {
 						currentSpeed = minS
 					}

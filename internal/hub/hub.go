@@ -27,6 +27,9 @@ func Run(inResultChan <-chan model.ResultData, outCommandChan chan<- model.Comma
 		go ReceiveCommandFromFrontEnd(conn, internalCommandChan, outCommandChan)
 		go SendResultToFrontEnd(conn, inResultChan)
 	})
+	go func() {
+		http.ListenAndServe(":8080", nil)
+	}()
 
 	// UDP
 	{
