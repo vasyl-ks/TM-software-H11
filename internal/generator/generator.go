@@ -5,9 +5,10 @@ import (
 )
 
 /*
-Generator initializes the dataChan and resultChan channels, then calls the Sensor and Process goroutines.
+Generator initializes the dataChan channel, then calls the Sensor and Process goroutines.
 - Sensor runs independently, generates random values, SensorData, and sends it through dataChan.
-- Process receives SensorData, calculates statistics, builds a Result, and sends it through resultChan.
+  - Sensor also receives Command messages via inCommandChan to modify its behavior in real time.
+- Process receives SensorData, calculates statistics, builds a Result, and sends it through outResultChan.
 */
 func Run(inCommandChan <-chan model.Command, outResultChan chan<- model.ResultData) {
 	// Create unbuffered channel.
