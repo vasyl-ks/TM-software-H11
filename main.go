@@ -13,7 +13,7 @@ main loads configuration values, and then calls the Server goroutine.
 The final "select {}" keep the program running indefinitely.
 */
 func main() {
-	// Load configuration (const variables)
+	// Load runtime configuration
 	config.LoadConfig()
 
 	// Run Server and Client.
