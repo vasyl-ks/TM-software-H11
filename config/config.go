@@ -7,33 +7,44 @@ import (
 	"time"
 )
 
-// Server-side config
-type server struct {
-	ClientPort 	int	`json:"clientPort"`
-	I 			int	`json:"intervalMiliSeconds"`
-	Interval 	time.Duration
-	
-	VehicleID	string	`json:"vehicleID"`
-	SpeedMax	float32	`json:"speedMaxKm"`
-	SpeedMin	float32	`json:"speedMinKm"`
-	RPMMax		float32	`json:"rpmMax"`
-	RPMMin		float32	`json:"rpmMix"`
-	TempMax		float32	`json:"tempMaxCº"`
-	TempMin		float32	`json:"tempMinCº"`
-	PressureMax	float32	`json:"pressureMaxBar"`
-	PressureMin	float32	`json:"pressureMinBar"`
+type vehicle struct {
+	VehicleID string `json:"vehicleID"`
 }
 
-// Client-side config
-type client struct {
-	FileDir 	string `json:"fileDir"`
+type sensor struct {
+	Interval    time.Duration
+	I           int     `json:"intervalMilliSeconds"`
+	MaxSpeed    float32 `json:"maxSpeed"`
+	MinSpeed    float32 `json:"minSpeed"`
+	MaxPressure float32 `json:"maxPressure"`
+	MinPressure float32 `json:"minPressure"`
+	MaxTemp     float32 `json:"maxTemp"`
+	MinTemp     float32 `json:"minTemp"`
+}
+
+type processor struct {
+	Interval time.Duration
+	I        int `json:"intervalMilliSeconds"`
+}
+
+type logger struct {
+	MaxLines int    `json:"maxLines"`
+	FileDir  string `json:"fileDir"`
+}
+
+type senderANDlistener struct {
+	UDPPort int `json:"udpPort"`
+	BufferSize int `json:"bufferSize"`
 }
 
 // Global config instances
-var Server server
-var Client client
+var Vehicle vehicle
+var Sensor sensor
+var Processor processor
+var Logger logger
+var SenderANDListener senderANDlistener
 
-// LoadConfig reads config.json and configures Server and Client
+// LoadConfig reads config.json and configures
 func LoadConfig() {
 	// Open the file
 	file, err := os.Open("config.json")
@@ -46,10 +57,13 @@ func LoadConfig() {
 	// Read the file
 	decoder := json.NewDecoder(file)
 
-	// Parse it into the temp struct
+	// Parse it into a temp struct
 	temp := struct {
-		S server `json:"server"`
-		C client `json:"client"`
+		V   vehicle           `json:"vehicle"`
+		Sn  sensor            `json:"sensor"`
+		P   processor         `json:"processor"`
+		L   logger            `json:"logger"`
+		SaL senderANDlistener `json:"senderANDlistener"`
 	}{}
 	err = decoder.Decode(&temp)
 	if err != nil {
@@ -58,9 +72,12 @@ func LoadConfig() {
 	}
 
 	// Copy parsed values into globals
-	Server = temp.S
-	Client = temp.C
+	Sensor = temp.Sn
+	Processor = temp.P
+	Logger = temp.L
+	SenderANDListener = temp.SaL
 
-	// Derive time.Duration from milliseconds
-	Server.Interval = time.Duration(Server.I) * time.Millisecond
+	// Derive time.Duration to Seconds
+	Sensor.Interval = time.Duration(Sensor.I) * time.Millisecond
+	Processor.Interval = time.Duration(Processor.I) * time.Millisecond
 }

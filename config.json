@@ -1,19 +1,25 @@
 {
-    "server": {
-        "clientPort": 10000,
-        "intervalMiliSeconds": 100,
-        
-        "vehicleID": "V123",
-	    "speedMaxKm": 200,
-	    "speedMinKm": 0,
-	    "rpmMax": 8000,
-	    "rpmMix": 0,
-	    "tempMaxCº": 100,
-	    "tempMinCº": 0,
-	    "pressureMaxBar": 10,
-	    "pressureMinBar": 0
+    "vehicle": {
+        "vehicleID": "123"
     },
-    "client": {
+    "sensor": {
+        "intervalMilliSeconds": 1,
+        "maxSpeed": 150,
+	    "minSpeed": 0,
+	    "maxPressure": 10,
+	    "minPressure": 0,
+	    "maxTemp": 50,
+	    "minTemp": 0
+    },
+    "processor": {
+        "intervalMilliSeconds": 100
+    },
+    "logger": {
+        "maxLines": 5000,
         "fileDir": "logs"
+    },
+    "senderANDlistener": {
+        "udpPort": 10000,
+        "bufferSize": 1024
     }
 }

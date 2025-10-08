@@ -18,12 +18,18 @@ This project simulates a simple telemetry pipeline using UDP sockets. A server p
 
 ## Repository Layout
 ```
-TM-software-H11
+TM-software-H11/
 │   .gitignore
 │   config.json
 │   go.mod
 │   main.go
 │   README.md
+├───client
+│   │   client.go
+│   └───internal
+│           listener.go
+│           logger.go
+│           parser.go
 ├───config
 │       config.go
 └───modules

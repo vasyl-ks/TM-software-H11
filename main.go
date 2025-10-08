@@ -2,20 +2,23 @@ package main
 
 import (
 	"github.com/vasyl-ks/TM-software-H11/config"
-	"github.com/vasyl-ks/TM-software-H11/modules/server"
-	"github.com/vasyl-ks/TM-software-H11/modules/client"
+	"github.com/vasyl-ks/TM-software-H11/server"
+	"github.com/vasyl-ks/TM-software-H11/client"
 )
 
+/*
+main loads configuration values, and then calls the Server goroutine.
+- Server generates SensorData, process it into Result and then sends it via UDP.
+- Client listens for raw JSON datagrams, parses them to ResultData and logs them.
+The final "select {}" keep the program running indefinitely.
+*/
 func main() {
 	// Load runtime configuration
 	config.LoadConfig()
 
-	// Run Server
-	go server.UDPServer()
+	// Run Server and Client.
+	go server.Server()
+	go client.Client()
 
-	// Run Client
-	go client.UDPClient()
-
-	// Block forever to keep the main goroutine alive.
-	select{}
+	select {}
 }
