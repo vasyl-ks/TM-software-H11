@@ -68,6 +68,19 @@ func Sensor(inCommandChan <-chan model.Command, outChan chan<- model.SensorData)
 						maxAllowed = maxS * 0.8
 				}
 
+				// adjust growth factors based on mode
+				var growthFactor float32
+				switch mode {
+				case "eco":
+					growthFactor = 0.7   // slowest growth
+				case "normal":
+					growthFactor = 1.0   // standard growth
+				case "speed":
+					growthFactor = 1.3   // fastest growth
+				default:
+					growthFactor = 1.0
+				}
+
 				// simulate speed
 				if started {
 					if currentSpeed < minS {
@@ -80,11 +93,45 @@ func Sensor(inCommandChan <-chan model.Command, outChan chan<- model.SensorData)
 					currentSpeed = 0
 				}
 
+				// Normalize the current speed into a [0,1] range
+				// 0 means minimum speed, 1 means maximum speed
+				speedRatio := (currentSpeed - minS) / (maxS - minS)
+				if speedRatio < 0 {
+					speedRatio = 0
+				} else if speedRatio > 1 {
+					speedRatio = 1
+				}
+
+				// Make pressure and temperature increase with speed
+				// Both grow linearly from their minimum to maximum values
+				// They grow faster on the sport mode and slower on eco.
+				pressure := minP + (speedRatio * growthFactor) * (maxP - minP)
+				temperature := minT + (speedRatio * growthFactor) * (maxT - minT)
+
+				// Add a small random noise to simulate sensor variability
+				pressure += rand.Float32()*0.1 - 0.05
+				temperature += rand.Float32()*0.5 - 0.25
+
+				// Adjust pressure to avoid negative values
+				if pressure < 0 {
+					pressure = 0
+				}
+
+				// Adjust pressure to avoid values above maximum.
+				if pressure > maxP {
+					pressure = maxP
+				}
+				if temperature > maxT {
+					temperature = maxT
+				}
+
+
+				// Create SensorData
 				data := model.SensorData{
 					VehicleID:   config.Vehicle.VehicleID,
 					Speed:    	 currentSpeed,
-					Pressure:    rand.Float32()*(maxP-minP) + minP, // 0-10 bar
-					Temperature: rand.Float32()*(maxT-minT) + minT, // 0-50 °C
+					Pressure:    pressure,
+					Temperature: temperature,
 					CreatedAt: time.Now().Local(),
 				}
 				outChan <- data
