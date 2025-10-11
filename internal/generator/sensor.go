@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"log"
 	"math/rand"
 	"strings"
 	"time"
@@ -33,6 +34,8 @@ func Sensor(inCommandChan <-chan model.Command, outChan chan<- model.SensorData)
 	currentSpeed := float32(0)
 	mode := "normal"
 	started := false
+
+	log.Println("[INFO][Generator][Sensor] Running.")
 
 	for {
 		select {

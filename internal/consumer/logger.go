@@ -22,7 +22,7 @@ type Loggers struct {
 func createLogger(baseDir, subDir, prefix string) (*log.Logger, *os.File, error) {
 	dirPath := filepath.Join(baseDir, subDir)
 	if err := os.MkdirAll(dirPath, 0755); err != nil {
-		return nil, nil, fmt.Errorf("error creating directory %s: %w", dirPath, err)
+		return nil, nil, fmt.Errorf("[ERROR][Consumer][Log] Error creating directory %s: %w", dirPath, err)
 	}
 
 	filename := fmt.Sprintf("%s_%s.jsonl", prefix, time.Now().Format("20060102_150405"))
@@ -30,7 +30,7 @@ func createLogger(baseDir, subDir, prefix string) (*log.Logger, *os.File, error)
 
 	file, err := os.OpenFile(fullPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
-		return nil, nil, fmt.Errorf("error opening log file %s: %w", fullPath, err)
+		return nil, nil, fmt.Errorf("[ERROR][Consumer][Log] Error opening log file %s: %w", fullPath, err)
 	}
 
 	logger := log.New(file, "", 0)
@@ -85,28 +85,28 @@ func Log(inResultChan <-chan model.ResultData, inCommandChan <-chan model.Comman
 
 	// Create base directory
 	if err := os.MkdirAll(fileDir, 0755); err != nil {
-		fmt.Println("Error creating directory:", err)
+		log.Println("[ERROR][Consumer][Log] Error creating directory:", err)
 		return
 	}
 
 	// Create all loggers
 	mainLogger, mainFile, err := createLogger(fileDir, "", "log")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	defer mainFile.Close()
 
 	dataLogger, dataFile, err := createLogger(fileDir, "data", "data")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	defer dataFile.Close()
 
 	commandLogger, commandFile, err := createLogger(fileDir, "commands", "command")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	defer commandFile.Close()
@@ -117,6 +117,8 @@ func Log(inResultChan <-chan model.ResultData, inCommandChan <-chan model.Comman
 		Data:    dataLogger,
 		Command: commandLogger,
 	}
+
+	log.Println("[INFO][Consumer][Log] Running.")
 
 	for {
 		select {

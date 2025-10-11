@@ -2,7 +2,7 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"os"
 	"time"
 )
@@ -54,10 +54,12 @@ var Done = make(chan struct{})
 
 // LoadConfig reads config.json and configures
 func LoadConfig() {
+	defer log.Println("[INFO][Config] Loaded.")
+
 	// Open the file
 	file, err := os.Open("config.json")
 	if err != nil {
-		fmt.Println("Error loading configuration: ", err)
+		log.Println("[ERROR][Config] Error opening config file: ", err)
 		return
 	}
 	defer file.Close()
@@ -75,7 +77,7 @@ func LoadConfig() {
 	}{}
 	err = decoder.Decode(&temp)
 	if err != nil {
-		fmt.Println("Error loading configuration: ", err)
+		log.Println("[ERROR][Config] Error decoding config struct: ", err)
 		return
 	}
 

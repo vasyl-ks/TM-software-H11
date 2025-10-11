@@ -1,6 +1,7 @@
 package hub
 
 import (
+	"log"
 	"fmt"
 	"net/http"
 	"github.com/vasyl-ks/TM-software-H11/config"
@@ -14,6 +15,8 @@ Hub acts as a central bridge between the Generator, Frontend, and Consumer.
 - Consumer ↔ Hub: sends ResultData via UDP and Command via TCP.
 */
 func Run(inResultChan <-chan model.ResultData, outCommandChan chan<- model.Command) {
+	defer log.Println("[INFO][Hub] Running.")
+
 	// Create unbuffered channel.
 	internalCommandChan := make(chan model.Command)
 
@@ -30,7 +33,7 @@ func Run(inResultChan <-chan model.ResultData, outCommandChan chan<- model.Comma
 		go SendResultToFrontEnd(conn, inResultChan)
 	})
 	go func() {
-		http.ListenAndServe(":"+fmt.Sprintf("%d", config.Hub.WSPort), nil)
+		http.ListenAndServe("127.0.0.1:"+fmt.Sprintf("%d", config.Hub.WSPort), nil)
 	}()
 
 	// UDP

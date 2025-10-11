@@ -3,7 +3,9 @@ package consumer
 import (
 	"fmt"
 	"io"
+	"log"
 	"net"
+
 	"github.com/vasyl-ks/TM-software-H11/config"
 )
 
@@ -14,27 +16,31 @@ Listen binds a UDP socket on config.Sender.ClientPort and forwards incoming data
 - Copies each datagram into a new slice to avoid buffer reuse.
 */
 func Listen(outChan chan<- []byte) {
-	// Listen for UDP Traffic
-	udpAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("127.0.0.1:%d", config.Hub.UDPPort))
+	addrUDP := fmt.Sprintf("127.0.0.1:%d", config.Hub.UDPPort)
+	addrTCP := fmt.Sprintf("127.0.0.1:%d", config.Hub.TCPPort)
+
+	// Resolve and bind UDP
+	udpAddr, err := net.ResolveUDPAddr("udp", addrUDP)
 	if err != nil {
-		fmt.Println("Error resolving UDP address:", err)
+		log.Printf("[ERROR][Consumer][Listen] Failed to resolve UDP address %s: %v", addrUDP, err)
 		return
 	}
 	udpConn, err := net.ListenUDP("udp", udpAddr)
 	if err != nil {
-		fmt.Println("Error listening on UDP:", err)
+		log.Printf("[ERROR][Consumer][Listen] Failed to listen on UDP %s: %v", addrUDP, err)
 		return
 	}
 
-	// Listen for TCP Traffic
-	tcpListener, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", config.Hub.TCPPort))
+	// Bind TCP
+	tcpListener, err := net.Listen("tcp", addrTCP)
 	if err != nil {
-		fmt.Println("Error listening on TCP:", err)
+		log.Printf("[ERROR][Consumer][Listen] Failed to listen on TCP %s: %v", addrTCP, err)
 		return
 	}
 
 	// Notify that listeners are ready
-    close(Ready)
+	close(Ready)
+	log.Printf("[INFO][Consumer][Listen] Listening on UDP %s and TCP %s", addrUDP, addrTCP)
 
 	// UDP handler goroutine
 	go func() {
@@ -43,7 +49,7 @@ func Listen(outChan chan<- []byte) {
 		for {
 			n, _, err := udpConn.ReadFromUDP(buf)
 			if err != nil {
-				fmt.Printf("Error reading from UDP: %v\n", err)
+				log.Printf("[ERROR][Consumer][Listen] Error reading from UDP: %v\n", err)
 				continue
 			}
 			payload := make([]byte, n)
@@ -57,7 +63,7 @@ func Listen(outChan chan<- []byte) {
 		defer tcpListener.Close()
 		conn, err := tcpListener.Accept()
 			if err != nil {
-			fmt.Println("Error accepting TCP connection:", err)
+			fmt.Println("[ERROR][Consumer][Listen] Error accepting TCP connection:", err)
 			return
 		}
 		defer conn.Close()
@@ -66,7 +72,7 @@ func Listen(outChan chan<- []byte) {
 			n, err := conn.Read(buf)
 			if err != nil {
 				if err != io.EOF {
-					fmt.Printf("Error reading TCP: %v\n", err)
+					fmt.Printf("[ERROR][Consumer][Listen] Error reading TCP: %v\n", err)
 				}
 				break
 			}
@@ -75,30 +81,4 @@ func Listen(outChan chan<- []byte) {
 			outChan <- payload
 		}
 	}()
-
-
-	for {
-		conn, err := tcpListener.Accept()
-		if err != nil {
-			fmt.Println("Error accepting TCP connection:", err)
-			continue
-		}
-
-		go func(c net.Conn) {
-			defer c.Close()
-			buf := make([]byte, config.Hub.BufferSize)
-			for {
-				n, err := c.Read(buf)
-				if err != nil {
-					if err != io.EOF {
-						fmt.Printf("read TCP: %v\n", err)
-					}
-					break
-				}
-				payload := make([]byte, n)
-				copy(payload, buf[:n])
-				outChan <- payload
-			}
-		}(conn)
-	}
 }

@@ -2,7 +2,8 @@ package consumer
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
+
 	"github.com/vasyl-ks/TM-software-H11/internal/model"
 )
 
@@ -12,6 +13,8 @@ attempts to decode each into either a ResultData or a Command object,
 then send parsed messages to their respective output channels.
 */
 func Parse(inChan <-chan []byte, outResultChan chan<- model.ResultData, outCommandChan chan<- model.Command) {
+	log.Println("[INFO][Consumer][Parse] Running.")
+
 	for payload := range inChan {
 		// First, try to unmarshal as ResultData
 		var res model.ResultData
@@ -28,6 +31,6 @@ func Parse(inChan <-chan []byte, outResultChan chan<- model.ResultData, outComma
 		}
 
 		// If neither works, log error
-		fmt.Printf("Parse: unrecognized JSON payload: %s\n", string(payload))
+		log.Printf("[Error][Consumer][Parse] Unrecognized JSON payload: %s\n", string(payload))
 	}
 }

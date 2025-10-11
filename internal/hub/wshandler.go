@@ -17,9 +17,10 @@ var upgrader = websocket.Upgrader{
 func CreateConnWS(w http.ResponseWriter, r *http.Request) *websocket.Conn {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println("Error upgrading to WebSocket:", err)
+		log.Println("[ERROR][Hub][WS] Error upgrading to WebSocket:", err)
 		return nil
 	}
+	log.Printf("[INFO][Hub][WS] Established WS connection between Hub and Frontend, on %s", conn.LocalAddr())
 	return conn
 }
 
@@ -35,14 +36,14 @@ func ReceiveCommandFromFrontEnd(conn *websocket.Conn, outChan1 chan<- model.Comm
 		// Listen for WS Command JSON
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
-			log.Println("Error reading WS command:", err)
+			log.Println("[ERROR][Hub][WS] Error reading WS command:", err)
 			break
 		}
 
 		// Parse it to Command struct
 		var cmd model.Command
 		if err := json.Unmarshal(msg, &cmd); err != nil {
-			log.Println("Error parsing WS command JSON:", err)
+			log.Println("[ERROR][Hub][WS] Error parsing WS command JSON:", err)
 			continue
 		}
 
@@ -63,13 +64,13 @@ func SendResultToFrontEnd(conn *websocket.Conn, inChan <-chan model.ResultData) 
 		// Marshal ResultData to JSON-encoded []byte
 		data, err := json.Marshal(result)
 		if err != nil {
-			log.Println("Error marshalling WS result JSON:", err)
+			log.Println("[ERROR][Hub][WS] Error marshalling WS result JSON:", err)
 			continue
 		}
 
 		// Send JSON via WS
 		if err := conn.WriteMessage(websocket.TextMessage, data); err != nil {
-			log.Println("Error sending via WS:", err)
+			log.Println("[ERROR][Hub][WS] Error sending via WS:", err)
 			break
 		}
 	}

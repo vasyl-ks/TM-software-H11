@@ -1,6 +1,8 @@
 package generator
 
 import (
+	"log"
+
 	"github.com/vasyl-ks/TM-software-H11/internal/model"
 )
 
@@ -11,6 +13,8 @@ Generator initializes the dataChan channel, then calls the Sensor and Process go
 - Process receives SensorData, calculates statistics, builds a Result, and sends it through outResultChan.
 */
 func Run(inCommandChan <-chan model.Command, outResultChan chan<- model.ResultData) {
+	defer log.Println("[INFO][Generator] Running.")
+
 	// Create unbuffered channel.
 	dataChan := make(chan model.SensorData)
 

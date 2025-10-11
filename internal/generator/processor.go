@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"log"
 	"time"
 
 	"github.com/vasyl-ks/TM-software-H11/config"
@@ -102,6 +103,8 @@ func Process(inChan <-chan model.SensorData, outChan chan<- model.ResultData) {
 	var dataSlice []model.SensorData
 	ticker := time.NewTicker(batchInterval)
 	defer ticker.Stop()
+
+	log.Println("[INFO][Generator][Process] Running.")
 
 	for {
 		select {

@@ -3,6 +3,7 @@ package hub
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net"
 
 	"github.com/vasyl-ks/TM-software-H11/config"
@@ -14,9 +15,10 @@ func CreateConnTCP() net.Conn {
 	address := fmt.Sprintf("127.0.0.1:%d", config.Hub.TCPPort)
 	conn, err := net.Dial("tcp", address)
 	if err != nil {
-		fmt.Println("Error connecting via TCP:", err)
+		log.Println("[ERROR][Hub][TCP] Error connecting via TCP:", err)
 		panic(err)
 	}
+	log.Printf("[INFO][Hub][TCP] Established TCP connection from Hub to Consumer, on %s", address)
 	return conn
 }
 
@@ -33,7 +35,7 @@ func SendCommandToConsumer(conn net.Conn, inChan <-chan model.Command) {
 		// Marshal ResultData to JSON-encoded []byte
 		data, err := json.Marshal(command)
 		if err != nil {
-			fmt.Println("Error marshalling WS command JSON:", err)
+			log.Println("[ERROR][Hub][TCP] Error marshalling WS command JSON:", err)
 			continue
 		}
 
@@ -43,7 +45,7 @@ func SendCommandToConsumer(conn net.Conn, inChan <-chan model.Command) {
 		// Send JSON via TCP
 		_, err = conn.Write(data)
 		if err != nil {
-			fmt.Println("Error sending via TCP:", err)
+			log.Println("[ERROR][Hub][TCP] Error sending via TCP:", err)
 			break
 		}
 	}

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"github.com/vasyl-ks/TM-software-H11/config"
 	consumer "github.com/vasyl-ks/TM-software-H11/internal/consumer"
 	generator "github.com/vasyl-ks/TM-software-H11/internal/generator"
@@ -16,6 +18,8 @@ Start loads configuration values, creates an internal channel, and then calls th
 The final "select {}" keep the program running indefinitely.
 */
 func Start() {
+	log.Println("[INFO][Main] Running")
+
 	// Load configuration (const variables)
 	config.LoadConfig()
 

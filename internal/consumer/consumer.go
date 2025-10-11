@@ -1,6 +1,8 @@
 package consumer
 
 import (
+	"log"
+
 	"github.com/vasyl-ks/TM-software-H11/internal/model"
 )
 
@@ -11,6 +13,8 @@ Consumer initializes the byteChan and jsonChan channels, and calls the Listen, P
 - Log receives a ResultData from resultChan and logs it.
 */
 func Run() {
+	defer log.Println("[INFO][Consumer] Running.")
+
 	// Create unbuffered channels.
 	byteChan := make(chan []byte)
 	resultChan := make(chan model.ResultData)
