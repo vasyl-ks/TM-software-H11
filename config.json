@@ -24,7 +24,7 @@
     "hub": {
         "udpPort": 10000,
         "tcpPort": 10000,
-        "wsPort":  10000,
+        "wsPort":  5173,
         "bufferSize": 1024
     }
 }
