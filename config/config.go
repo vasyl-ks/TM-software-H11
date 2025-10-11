@@ -49,6 +49,9 @@ var Processor processor
 var Logger logger
 var Hub hub
 
+// Exported channel to signal when config finishes loading
+var Done = make(chan struct{})
+
 // LoadConfig reads config.json and configures
 func LoadConfig() {
 	// Open the file
@@ -86,4 +89,6 @@ func LoadConfig() {
 	// Derive time.Duration to Seconds
 	Sensor.Interval = time.Duration(Sensor.I) * time.Millisecond
 	Processor.Interval = time.Duration(Processor.I) * time.Millisecond
+
+	close(Done)
 }

@@ -7,11 +7,13 @@ import (
 	"github.com/vasyl-ks/TM-software-H11/config"
 )
 
+var Ready = make(chan struct{})
+
 /*
 Listen binds a UDP socket on config.Sender.ClientPort and forwards incoming datagrams to out.
 - Copies each datagram into a new slice to avoid buffer reuse.
 */
-func Listen(outChan chan<- []byte, ready chan<- struct{}) {
+func Listen(outChan chan<- []byte) {
 	// Listen for UDP Traffic
 	udpAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("127.0.0.1:%d", config.Hub.UDPPort))
 	if err != nil {
@@ -32,7 +34,7 @@ func Listen(outChan chan<- []byte, ready chan<- struct{}) {
 	}
 
 	// Notify that listeners are ready
-    close(ready)
+    close(Ready)
 
 	// UDP handler goroutine
 	go func() {

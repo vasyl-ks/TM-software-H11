@@ -19,20 +19,18 @@ func Start() {
 	// Load configuration (const variables)
 	config.LoadConfig()
 
+	// Wait for config to finish
+	<-config.Done
+
 	// Creates internal channel of ResultData and Command between Generator and Hub.
 	resultChan := make(chan modelPkg.ResultData)
 	commandChan := make(chan modelPkg.Command)
 
 	// Run Generator, Hub and Consumer.
 	go generator.Run(commandChan, resultChan)
-
-	// Consumer must initialize UDP&TCP listeners, before Hub tries to connect.
-	ready := make(chan struct{})
-	go consumer.Run(ready)
-	<-ready
-	
+	go consumer.Run()
+	<-consumer.Ready // Wait for consumer to initialize UDP&TCP listeners, before Hub tries to connect.
 	go hub.Run(resultChan, commandChan)
-	
 
 	select {}
 }

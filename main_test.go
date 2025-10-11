@@ -35,6 +35,9 @@ func TestFrontendSimulation(t *testing.T) {
 	defer logFile.Close()
 	logger := log.New(logFile, "", log.LstdFlags)
 
+	// Wait for config to finish
+	<-config.Done
+
 	// Connect to running Hub
 	wsURL := fmt.Sprintf("ws://localhost:%d/api/stream", config.Hub.WSPort)
 	dialer := websocket.Dialer{HandshakeTimeout: 3 * time.Second}
