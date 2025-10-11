@@ -9,15 +9,15 @@ and indemnifications such as its ID and the time it was generated and processed.
 */
 type ResultData struct {
 	AverageSpeed    float32
-	MinSpeed        float32
-	MaxSpeed        float32
+	MinimumSpeed    float32
+	MaximumSpeed    float32
 	AverageTemp     float32
-	MinTemp         float32
-	MaxTemp         float32
+	MinimumTemp     float32
+	MaximumTemp     float32
 	AveragePressure float32
-	MinPressure     float32
-	MaxPressure     float32
+	MinimumPressure float32
+	MaximumPressure float32
 	VehicleID       string
-	CreatedAt     time.Time
+	CreatedAt       time.Time
 	ProcessedAt     time.Time
 }

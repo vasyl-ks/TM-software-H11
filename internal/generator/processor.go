@@ -56,9 +56,9 @@ func calculateMin(data []model.SensorData) model.ResultData {
 	}
 
 	return model.ResultData{
-		MinSpeed:    minSpeed,
-		MinTemp:     minTemp,
-		MinPressure: minPressure,
+		MinimumSpeed:    minSpeed,
+		MinimumTemp:     minTemp,
+		MinimumPressure: minPressure,
 	}
 }
 
@@ -81,9 +81,9 @@ func calculateMax(data []model.SensorData) model.ResultData {
 	}
 
 	return model.ResultData{
-		MaxSpeed:    maxSpeed,
-		MaxTemp:     maxTemp,
-		MaxPressure: maxPressure,
+		MaximumSpeed:    maxSpeed,
+		MaximumTemp:     maxTemp,
+		MaximumPressure: maxPressure,
 	}
 }
 
@@ -132,14 +132,14 @@ func Process(inChan <-chan model.SensorData, outChan chan<- model.ResultData) {
 			// Build ResultData
 			result := model.ResultData{
 				AverageSpeed:    avg.AverageSpeed,
-				MinSpeed:        min.MinSpeed,
-				MaxSpeed:        max.MaxSpeed,
+				MinimumSpeed:    min.MinimumSpeed,
+				MaximumSpeed:    max.MaximumSpeed,
 				AverageTemp:     avg.AverageTemp,
-				MinTemp:         min.MinTemp,
-				MaxTemp:         max.MaxTemp,
+				MinimumTemp:     min.MinimumTemp,
+				MaximumTemp:     max.MaximumTemp,
 				AveragePressure: avg.AveragePressure,
-				MinPressure:     min.MinPressure,
-				MaxPressure:     max.MaxPressure,
+				MinimumPressure: min.MinimumPressure,
+				MaximumPressure: max.MaximumPressure,
 				VehicleID:       dataSlice[0].VehicleID,
 				CreatedAt:       tme,
 				ProcessedAt:     time.Now().Local(),

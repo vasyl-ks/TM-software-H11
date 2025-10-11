@@ -47,9 +47,9 @@ func writeResult(loggers Loggers, r model.ResultData) {
 		r.CreatedAt.Format("15:04:05.000000"),
 		r.ProcessedAt.Format("15:04:05.000000"),
 		time.Now().Local().Format("15:04:05.000000"),
-		r.AverageSpeed, r.MinSpeed, r.MaxSpeed,
-		r.AverageTemp, r.MinTemp, r.MaxTemp,
-		r.AveragePressure, r.MinPressure, r.MaxPressure,
+		r.AverageSpeed, r.MinimumSpeed, r.MaximumSpeed,
+		r.AverageTemp, r.MinimumTemp, r.MaximumTemp,
+		r.AveragePressure, r.MinimumPressure, r.MaximumPressure,
 	)
 
 	loggers.Main.Println(msg)
@@ -69,7 +69,6 @@ func writeCommand(loggers Loggers, cmd model.Command) {
 	loggers.Command.Println(msg)
 }
 
-
 /*
 Log receives ResultData and Command messages from their respective channels
 and logs them to rotating log files.
@@ -80,7 +79,7 @@ and logs them to rotating log files.
 */
 func Log(inResultChan <-chan model.ResultData, inCommandChan <-chan model.Command) {
 	lineCount := 0
-	fileDir := config.Logger.FileDir // defines directory where the log is saved.
+	fileDir := config.Logger.FileDir   // defines directory where the log is saved.
 	maxLines := config.Logger.MaxLines // defines the maximum number of ResultData to log in a single file.
 
 	// Create base directory
@@ -122,18 +121,17 @@ func Log(inResultChan <-chan model.ResultData, inCommandChan <-chan model.Comman
 
 	for {
 		select {
-			// Receive ResultData
-			case resultData, ok := <-inResultChan:
+		// Receive ResultData
+		case resultData, ok := <-inResultChan:
 			if !ok {
 				inResultChan = nil // channel closed
 				continue
 			}
 			// Log in the file
-       		writeResult(loggers, resultData)
+			writeResult(loggers, resultData)
 
-
-			// Receive Command
-			case cmd, ok := <-inCommandChan:
+		// Receive Command
+		case cmd, ok := <-inCommandChan:
 			if !ok {
 				inCommandChan = nil // channel closed
 				continue
@@ -152,7 +150,7 @@ func Log(inResultChan <-chan model.ResultData, inCommandChan <-chan model.Comman
 			mainFile.Close()
 			dataFile.Close()
 			commandFile.Close()
-			
+
 			// Create a new file
 			mainLogger, mainFile, err = createLogger(fileDir, "", "log")
 			if err != nil {
@@ -178,7 +176,7 @@ func Log(inResultChan <-chan model.ResultData, inCommandChan <-chan model.Comman
 				Data:    dataLogger,
 				Command: commandLogger,
 			}
-				
+
 			lineCount = 0
 		}
 	}
