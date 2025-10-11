@@ -56,7 +56,7 @@ func TestFrontendSimulation(t *testing.T) {
 		{"action": "start"},
 		{"action": "accelerate", "params": 130},
 		{"action": "accelerate", "params": -10},
-		{"action": "mode", "params": "speed"},
+		{"action": "mode", "params": "sport"},
 		{"action": "accelerate"},
 		{"action": "accelerate", "params": 40},
 		{"action": "mode", "params": "eco"},

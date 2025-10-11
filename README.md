@@ -19,7 +19,7 @@ It connects multiple components — a **Generator**, **Hub**, **Consumer**, and 
   * `Command` messages flow from the Frontend (WS) to the Generator and Consumer (TCP).
 * **Consumer** that receives and logs both telemetry results and commands in rotating `.jsonl` files.
 * Real-time **WebSocket communication** with the Frontend for live telemetry and remote control.
-* Dynamic **command handling**: the vehicle can start, stop, accelerate, or change driving mode (`eco`, `normal`, `speed`).
+* Dynamic **command handling**: the vehicle can start, stop, accelerate, or change driving mode (`eco`, `normal`, `sport`).
 * Centralized **config system** controlling intervals, modes, and ports.
 * Includes an automated **test suite** that simulates a frontend connection sending commands and logging responses.
 
@@ -69,7 +69,7 @@ TM-software-H11/
    git clone https://github.com/vasyl-ks/TM-software-H11.git
    cd TM-software-H11
    ```
-3. Inspect and adjust `config.json` for your desired intervals, ports, and speed mode ratios.
+3. Inspect and adjust `config.json` for your desired intervals, ports, and sport mode ratios.
 4. Run the system:
 
    ```bash

@@ -17,7 +17,7 @@ Speed behavior responds to control commands:
 - "Start" → enables movement.
 - "Stop" → sets speed to 0.
 - "Accelerate n" → increases current speed by n.
-- "Mode" → changes driving mode (eco|normal|speed).
+- "Mode" → changes driving mode (eco|normal|sport).
 */
 func Sensor(inCommandChan <-chan model.Command, outChan chan<- model.SensorData) {
 	sensorInterval := config.Sensor.Interval // defines how often a new sensor reading is generated.
@@ -62,7 +62,7 @@ func Sensor(inCommandChan <-chan model.Command, outChan chan<- model.SensorData)
 						maxAllowed = maxS * 0.5
 					case "normal":
 						maxAllowed = maxS * 0.8
-					case "speed":
+					case "sport":
 						maxAllowed = maxS
 					default:
 						maxAllowed = maxS * 0.8
@@ -75,7 +75,7 @@ func Sensor(inCommandChan <-chan model.Command, outChan chan<- model.SensorData)
 					growthFactor = 0.7   // slowest growth
 				case "normal":
 					growthFactor = 1.0   // standard growth
-				case "speed":
+				case "sport":
 					growthFactor = 1.3   // fastest growth
 				default:
 					growthFactor = 1.0
