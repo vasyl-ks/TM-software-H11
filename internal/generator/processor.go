@@ -31,9 +31,9 @@ func calculateAverage(data []model.SensorData) model.ResultData {
 	}
 
 	return model.ResultData{
-		AverageSpeed:    sumSpeed / n,
-		AverageTemp:     sumTemp / n,
-		AveragePressure: sumPressure / n,
+		AverageSpeed:       sumSpeed / n,
+		AverageTemperature: sumTemp / n,
+		AveragePressure:    sumPressure / n,
 	}
 }
 
@@ -56,9 +56,9 @@ func calculateMin(data []model.SensorData) model.ResultData {
 	}
 
 	return model.ResultData{
-		MinimumSpeed:    minSpeed,
-		MinimumTemp:     minTemp,
-		MinimumPressure: minPressure,
+		MinimumSpeed:       minSpeed,
+		MinimumTemperature: minTemp,
+		MinimumPressure:    minPressure,
 	}
 }
 
@@ -81,9 +81,9 @@ func calculateMax(data []model.SensorData) model.ResultData {
 	}
 
 	return model.ResultData{
-		MaximumSpeed:    maxSpeed,
-		MaximumTemp:     maxTemp,
-		MaximumPressure: maxPressure,
+		MaximumSpeed:       maxSpeed,
+		MaximumTemperature: maxTemp,
+		MaximumPressure:    maxPressure,
 	}
 }
 
@@ -131,18 +131,18 @@ func Process(inChan <-chan model.SensorData, outChan chan<- model.ResultData) {
 
 			// Build ResultData
 			result := model.ResultData{
-				AverageSpeed:    avg.AverageSpeed,
-				MinimumSpeed:    min.MinimumSpeed,
-				MaximumSpeed:    max.MaximumSpeed,
-				AverageTemp:     avg.AverageTemp,
-				MinimumTemp:     min.MinimumTemp,
-				MaximumTemp:     max.MaximumTemp,
-				AveragePressure: avg.AveragePressure,
-				MinimumPressure: min.MinimumPressure,
-				MaximumPressure: max.MaximumPressure,
-				VehicleID:       dataSlice[0].VehicleID,
-				CreatedAt:       tme,
-				ProcessedAt:     time.Now().Local(),
+				AverageSpeed:       avg.AverageSpeed,
+				MinimumSpeed:       min.MinimumSpeed,
+				MaximumSpeed:       max.MaximumSpeed,
+				AverageTemperature: avg.AverageTemperature,
+				MinimumTemperature: min.MinimumTemperature,
+				MaximumTemperature: max.MaximumTemperature,
+				AveragePressure:    avg.AveragePressure,
+				MinimumPressure:    min.MinimumPressure,
+				MaximumPressure:    max.MaximumPressure,
+				VehicleID:          dataSlice[0].VehicleID,
+				CreatedAt:          tme,
+				ProcessedAt:        time.Now().Local(),
 			}
 			outChan <- result
 

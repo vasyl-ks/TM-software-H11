@@ -31,7 +31,7 @@ and forwards it to a channel.
 */
 func ReceiveCommandFromFrontEnd(conn *websocket.Conn, outChan1 chan<- model.Command, outChan2 chan<- model.Command) {
 	defer conn.Close()
-	
+
 	for {
 		// Listen for WS Command JSON
 		_, msg, err := conn.ReadMessage()
@@ -47,6 +47,8 @@ func ReceiveCommandFromFrontEnd(conn *websocket.Conn, outChan1 chan<- model.Comm
 			continue
 		}
 
+		log.Printf("[INFO][Hub][WS] Received Command from Frontend: %s", cmd)
+
 		// Sends it to channel
 		outChan1 <- cmd
 		outChan2 <- cmd
@@ -54,8 +56,8 @@ func ReceiveCommandFromFrontEnd(conn *websocket.Conn, outChan1 chan<- model.Comm
 }
 
 /*
-SendResultToFrontEnd receives ResultData from a channel, 
-marshals it to JSON-encoded []byte 
+SendResultToFrontEnd receives ResultData from a channel,
+marshals it to JSON-encoded []byte
 and sends it via WS to the WebSocket client.
 */
 func SendResultToFrontEnd(conn *websocket.Conn, inChan <-chan model.ResultData) {
