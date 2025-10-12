@@ -48,7 +48,7 @@ func writeResult(loggers Loggers, r model.ResultData) {
 		r.ProcessedAt.Format("15:04:05.000000"),
 		time.Now().Local().Format("15:04:05.000000"),
 		r.AverageSpeed, r.MinimumSpeed, r.MaximumSpeed,
-		r.AverageTemp, r.MinimumTemp, r.MaximumTemp,
+		r.AverageTemperature, r.MinimumTemperature, r.MaximumTemperature,
 		r.AveragePressure, r.MinimumPressure, r.MaximumPressure,
 	)
 
