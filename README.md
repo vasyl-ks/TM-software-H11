@@ -84,11 +84,13 @@ TM-software-H11/
 
 ## Getting Started
 1. Install Go 1.25.1 or newer and Node.js 20+ (with npm).
-2. Clone the repository and change into it:
+2. Clone the repository, change into it and update the submodule:
 
    ```bash
    git clone https://github.com/vasyl-ks/TM-software-H11.git
    cd TM-software-H11
+   git submodule update --init --recursive
+   
    ```
 3. Inspect and adjust `config.json` for your desired intervals, ports, range and mode ratios.
 4. Install frontend dependencies:
@@ -104,15 +106,15 @@ TM-software-H11/
    ./start.sh
    ```
 
-   The script launches `go run ./cmd/app/main.go` and `npm run dev` (Vite). Stop with `Ctrl+C`.
+   > The script launches `go run ./cmd/app/main.go` and `npm run dev` (Vite). Stop with `Ctrl+C`.
 6. To run only the backend:
 
    ```bash
    go run ./cmd/app/main.go
    ```
 
-   Then start the frontend separately with `npm run dev` inside `frontend/` (use `-- --host` if you need LAN access).
-7. Execute the integration test (writes logs under `test/`):
+   > Then start the frontend separately with `npm run dev` inside `frontend/` (use `-- --host` if you need LAN access).
+7. To execute the integration test (writes logs under `test/`):
 
    ```bash
    go test ./cmd/app -run TestFrontendSimulation -v
