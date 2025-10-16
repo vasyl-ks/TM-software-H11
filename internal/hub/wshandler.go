@@ -55,8 +55,6 @@ func ReceiveCommandFromFrontEnd(conn *websocket.Conn, outChan1 chan<- model.Comm
 			continue
 		}
 
-		log.Printf("[INFO][Hub][WS] Received Command from Frontend: %s", cmd)
-
 		// Sends it to channel
 		outChan1 <- cmd
 		outChan2 <- cmd
