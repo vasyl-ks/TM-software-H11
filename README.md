@@ -5,7 +5,7 @@ It connects multiple components — a **Generator**, **Hub**, **Consumer**, and 
 
 > This project was developed over the course of **four weeks** as part of the **Training Month (TM)** as a **Backend Engineer** for **Hyperloop UPV**.  
 > The different *branches* reflect the project’s progress throughout the four weeks.  
-> **Backend** components (contained in this repository) were implemented by me, while the **frontend** —included as a Git *submodule*— was developed by **[maximka76667](https://github.com/maximka76667)**.  
+> **Backend** components (contained in this repository) were implemented by me, while the **frontend** —included as a Git [*submodule*](https://github.com/maximka76667/TM-software-H11) — was developed by **[maximka76667](https://github.com/maximka76667)**. 
 > In the final stage, both parts were integrated into a fully functional end-to-end system.
 
 ## Table of Contents
