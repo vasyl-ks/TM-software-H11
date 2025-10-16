@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/websocket"
 	"github.com/vasyl-ks/TM-software-H11/internal/model"
@@ -36,7 +37,14 @@ func ReceiveCommandFromFrontEnd(conn *websocket.Conn, outChan1 chan<- model.Comm
 		// Listen for WS Command JSON
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
-			log.Println("[ERROR][Hub][WS] Error reading WS command:", err)
+			if websocket.IsCloseError(err,
+				websocket.CloseNormalClosure,
+				websocket.CloseGoingAway,
+				websocket.CloseNoStatusReceived) {
+				log.Printf("[INFO][Hub][WS] Client disconnected normally: %v", err) // Expected error
+			} else {
+				log.Printf("[ERROR][Hub][WS] Error reading WS command: %v", err) // Unexpected error
+			}
 			break
 		}
 
@@ -59,6 +67,11 @@ marshals it to JSON-encoded []byte
 and sends it via WS to the WebSocket client.
 */
 func SendResultToFrontEnd(conn *websocket.Conn, inChan <-chan model.ResultData) {
+	defer func() {
+		conn.Close()
+		log.Printf("[INFO][Hub][WS] Writer closed connection: %s", conn.RemoteAddr())
+	}()
+	
 	// Receive ResultData from channel
 	for result := range inChan {
 		// Marshal ResultData to JSON-encoded []byte
@@ -70,7 +83,15 @@ func SendResultToFrontEnd(conn *websocket.Conn, inChan <-chan model.ResultData) 
 
 		// Send JSON via WS
 		if err := conn.WriteMessage(websocket.TextMessage, data); err != nil {
-			log.Println("[ERROR][Hub][WS] Error sending via WS:", err)
+			if websocket.IsCloseError(err,
+				websocket.CloseNormalClosure,
+        		websocket.CloseGoingAway,
+        		websocket.CloseNoStatusReceived) ||
+        		strings.Contains(err.Error(), "close sent") {
+				log.Printf("[INFO][Hub][WS] Client disconnected during write: %v", err) // Expected error
+			} else {
+				log.Printf("[ERROR][Hub][WS] Error sending via WS: %v", err) // Unexpected error
+			}
 			break
 		}
 	}
